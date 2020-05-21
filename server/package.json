@@ -1,0 +1,12 @@
+{
+  "name": "nwz",
+  "version": "1.0.0",
+  "description": "Proyecto para la materia de sistemas distribuidos",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "start": "node server.js"
+  },
+  "author": "Eladio Rocha Vizcaino",
+  "license": "ISC"
+}
