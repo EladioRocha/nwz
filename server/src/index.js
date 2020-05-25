@@ -1,0 +1,2 @@
+require('dotenv').config()
+require(require('path').join(__dirname, 'server')).listen(process.env.PORT || process.env.PORT_DEV, () => console.log('SERVER WORKS', process.env.PORT || process.env.PORT_DEV))
