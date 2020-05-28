@@ -6,27 +6,8 @@ const path = require('path'),
     Genre = require(path.join(__dirname, '..', '..', 'models', 'Genres')),
     Language = require(path.join(__dirname, '..', '..', 'models', 'Languages')),
     Format = require(path.join(__dirname, '..', '..', 'models', 'Formats')),
-    Author = require(path.join(__dirname, '..', '..', 'models', 'Authors'));
-
-
-async function validToken(req, res, next) {
-    try {
-        const token = getToken(req.headers.authorization)
-        if(!validator.isJWT(token)) {
-            return res.status(400).json({data: {message: 'El token enviado es invalido.', status: 400, statusText: 'Bad Request'}})
-        }
-        const {data} = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        res.locals.data = data
-
-        next()
-    } catch (error) {
-        return res.status(403).json({data: {message: 'No tienes una sesión activa, inicie sesión para continuar.', status: 403, statusText: 'Forbidden'}})
-    }
-}
-
-function getToken(header) {
-    return header.split(' ').pop()
-}
+    Author = require(path.join(__dirname, '..', '..', 'models', 'Authors')),
+    handleResponse = require(path.join(__dirname, '..', '..', 'helpers', 'handleResponse'));
 
 async function validDataBook(req, res, next) {
     try {
@@ -46,22 +27,22 @@ async function validDataBook(req, res, next) {
             optionsLenghtSummary = {min: 10, max: 1000};
 
         if(!validator.isLength(title, optionsLenghtTitle)) {
-            return res.status(400).json({data: {message: 'El título es muy corto.', status: 400, statusText: 'Bad Request'}})
+            return handleResponse.response(res, 400, null, 'El título es muy corto.')
         }
         if(!validator.isLength(isbn, optionsLengthIsbn)) {
-            return res.status(400).json({data: {message: 'El ISBN es muy largo.', status: 400, statusText: 'Bad Request'}})
+            return handleResponse.response(res, 400, null, 'El ISBN es muy largo.')
         }
         if((numPages < 1 || numPages > 10000)) {
-            return res.status(400).json({data: {message: 'El número de página ingresado es invalido.', status: 400, statusText: 'Bad Request'}})
+            return handleResponse.response(res, 400, null, 'El número de página ingresado es invalido.')
         }
         if(!moment(publicationDate).isValid()) {
-            return res.status(400).json({data: {message: 'La fecha de publicación ingresada es invalida.', status: 400, statusText: 'Bad Request'}})
+            return handleResponse.response(res, 400, null, 'La fecha de publicación ingresada es invalida.')
         }
         if(!validator.isLength(summary, optionsLenghtSummary)) {
-            return res.status(400).json({data: {message: 'El resumen ingresado es invalido.', status: 400, statusText: 'Bad Request'}})
+            return handleResponse.response(res, 400, null, 'El resumen ingresado es invalido.')
         }
         if(!validator.isLength(author, optionsLengthAuthor)) {
-            return res.status(400).json({data: {message: 'El nombre del autor ingresado es muy corto.', status: 400, statusText: 'Bad Request'}})
+            return handleResponse.response(res, 400, null, 'El nombre del autor ingresado es muy corto.')
         }
 
         const genreDB = await Genre.findOne({name: genre}).select('name'),
@@ -74,14 +55,15 @@ async function validDataBook(req, res, next) {
             ).select('name');
         
         if(!genreDB) {
-            return res.status(400).json({data: {message: 'El género ingresado es invalido.', status: 400, statusText: 'Bad Request'}})
+            return handleResponse.response(res, 400, null, 'El género ingresado es invalido.')
         } 
         if(!languageDB) {
-            return res.status(400).json({data: {message: 'El idioma ingresado es invalido.', status: 400, statusText: 'Bad Request'}})
+            return handleResponse.response(res, 400, null, 'El idioma ingresado es invalido.')
         }
         if(!isValidFormat(formats, formatsDB)) {
-            return res.status(400).json({data: {message: 'Formato ingresado invalido.', status: 400, statusText: 'Bad Request'}})
+            return handleResponse.response(res, 400, null, 'Formato ingresado invalido.')
         }
+
         res.locals.data = {
             genre_id: genreDB._id,
             language_id: languageDB._id,
@@ -98,7 +80,7 @@ async function validDataBook(req, res, next) {
         next()
     } catch (error) {
         console.log(error)
-        res.json('error') 
+        return handleResponse.response(res, 500, null)
     }
 }
 
@@ -121,7 +103,29 @@ function isValidFormat(formats, formatsDB) {
     return validFormat
 }
 
+async function validQualificationBook(req, res, next) {
+    try {
+        const qualification = parseInt(req.body.qualification),
+            _id = mongoose.Types.ObjectId(req.body.book);
+
+        if(qualification < 1 || qualification > 5) {
+            return handleResponse.response(res, 400, null, 'El score asignado es invalido.')
+        }
+
+        res.locals.data = {
+            user_id: mongoose.Types.ObjectId(res.locals.data._id),
+            qualification,
+            _id
+        }
+
+        next()
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
 module.exports = {
-    validToken,
-    validDataBook
+    validDataBook,
+    validQualificationBook
 }

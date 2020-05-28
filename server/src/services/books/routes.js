@@ -1,9 +1,14 @@
 const path = require('path'),
     router = require('express').Router(),
     controller = require(path.join(__dirname, 'controllers')),
+    middlewareAuth = require(path.join(__dirname, '..', 'authentication', 'middlewares')),
     middleware = require(path.join(__dirname, 'middlewares'));
 
-router.post('/', [middleware.validToken, middleware.validDataBook], controller.saveBook)
-// router.post('/', middleware.login, controller.login)
+router.get('/', controller.getBooks)
+router.get('/:_id', controller.getBook)
+
+router.post('/', [middlewareAuth.validToken, middleware.validDataBook], controller.saveBook)
+
+router.put('/rank', [middlewareAuth.validToken, middleware.validQualificationBook], controller.updateRankBook)
 
 module.exports = router
