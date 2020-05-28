@@ -1,0 +1,9 @@
+{
+    "200": {"text": "OK"},
+    "400": {"text": "Bad Request"},
+    "401": {"text": "Unauthorized"},
+    "403": {"text": "Forbidden"},
+    "404": {"text": "Not Found"},
+    "500": {"text": "Internal Server Error", "message": "Ha ocurrido un problema en el servidor intentelo nuevamente, si el problema persiste contacte con el administrador."}
+
+}
