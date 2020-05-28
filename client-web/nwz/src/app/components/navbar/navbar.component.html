@@ -9,8 +9,9 @@
         id="searcher" type="text" placeholder="Buscar libro por título o ISBN" autocomplete="off">
     </div>
     <div class="w-1/6 my-auto">
-      <button class="w-full bg-orange-100 text-gray-700 font-semibold py-2 px-4 rounded focus:outline-none">Iniciar
-        sesión</button>
+      <button (click)="showModal()" class="w-full bg-orange-100 text-gray-700 font-semibold py-2 px-4 rounded focus:outline-none">Entrar</button>
     </div>
   </div>
 </nav>
+
+<app-modal [visible]="modal" (hide)="hideModal($event)"></app-modal>

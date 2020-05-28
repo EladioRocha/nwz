@@ -14,6 +14,7 @@ import { FooterComponent } from './components/footer/footer.component';
 // import { ProfileComponent } from './components/profile/profile.component';
 import { ProfileHeaderComponent } from './components/profile-header/profile-header.component';
 import { ProfileSidenavComponent } from './components/profile-sidenav/profile-sidenav.component';
+import { ModalComponent } from './components/modal/modal.component';
 // import { UsersChatComponent } from './components/users-chat/users-chat.component';
 // import { ProfileReportsComponent } from './components/profile-reports/profile-reports.component';
 // import { ProfileBooksComponent } from './components/profile-books/profile-books.component';
@@ -35,6 +36,7 @@ import { ProfileSidenavComponent } from './components/profile-sidenav/profile-si
     ProfileSidenavComponent,
     // ProfileHistoryComponent,
     routingComponents,
+    ModalComponent,
     // UsersChatComponent,
     // ProfileReportsComponent,
     // ProfileBooksComponent

@@ -6,10 +6,19 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
+  modal: boolean
+  constructor() {
+    this.modal = false
+   }
 
-  constructor() { }
+   showModal() {
+     this.modal = true
+   }
+
+   hideModal(e /*Event value: boolean*/) {
+     this.modal = e
+   }
 
   ngOnInit(): void {
   }
-
 }
