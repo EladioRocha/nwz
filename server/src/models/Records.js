@@ -8,8 +8,8 @@ const RecordSchema = new mongoose.Schema({
     start_time: {type: String, required: true},
     end_date: {type: Date, required: true},
     end_time: {type: String, required: true},
-    createdAt: {type: Date, required: true, default: Date.now},
-    updatedAt: {type: Date, required: true, default: Date.now}
+    created_at: {type: Date, required: true, default: Date.now},
+    updated_at: {type: Date, required: true, default: Date.now}
 })
 
 module.exports = mongoose.model('Record', RecordSchema)
