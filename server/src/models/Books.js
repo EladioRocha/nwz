@@ -11,9 +11,10 @@ const BookSchema = new mongoose.Schema({
     number_pages: {type: Number, required: true, min: 1, max: 10000},
     publication_date: {type: Date, required: true},
     summary: {type: String, required: true, minlength: 10, maxlength: 1000},
+    borrowed: {type: Boolean, required: true, default: false},
     rank: [{
         user_id: {type: mongoose.Types.ObjectId, required: true, ref: 'User'},
-        qualification: {type: Number, required: true, minlength: 1, maxlength: 5},
+        qualification: {type: Number, required: true, min: 1, max: 5},
         created_at: {type: Date, required: true, default: Date.now},
         updated_at: {type: Date, required: true, default: Date.now}
     }],
