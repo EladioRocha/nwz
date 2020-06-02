@@ -44,13 +44,13 @@ async function updateRankBook(req, res) {
         await Book.bulkWrite([
             {
                 updateOne: {
-                    filter: {'rank.user_id': user_id},
+                    filter: {_id, 'rank.user_id': user_id},
                     update: {$set: {'rank.$.qualification': qualification}}
                 }
             },
             {
                 updateOne: {
-                    filter: {'rank.user_id': {$ne: user_id}},
+                    filter: {_id, 'rank.user_id': {$ne: user_id}},
                     update: {$push: {'rank': {user_id, qualification}}}
                 }
             }
