@@ -17,8 +17,7 @@ async function validDataBook(req, res, next) {
             author = req.body.author.trim(' '),
             title = req.body.title.trim(' '),
             isbn = req.body.isbn.trim(' '),
-            numPages = req.body.number_pages,
-            publicationDate = moment(req.body.publication_date.trim(' '), 'DD-MM-YYYY').toDate(),
+            numPages = req.body.numPages,
             summary = req.body.summary.trim(' '),
             userId = res.locals.data._id,
             optionsLengthAuthor = {min: 2, max: 120},
@@ -34,9 +33,6 @@ async function validDataBook(req, res, next) {
         }
         if((numPages < 1 || numPages > 10000)) {
             return handleResponse.response(res, 400, null, 'El número de página ingresado es invalido.')
-        }
-        if(!moment(publicationDate).isValid()) {
-            return handleResponse.response(res, 400, null, 'La fecha de publicación ingresada es invalida.')
         }
         if(!validator.isLength(summary, optionsLenghtSummary)) {
             return handleResponse.response(res, 400, null, 'El resumen ingresado es invalido.')
@@ -73,7 +69,6 @@ async function validDataBook(req, res, next) {
             title,
             isbn,
             number_pages: numPages,
-            publication_date: publicationDate,
             summary
         }
 

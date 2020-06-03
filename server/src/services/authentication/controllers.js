@@ -19,7 +19,8 @@ async function login(req, res) {
             {_id},
             {token}
         )
-        return handleResponse.response(res, 200, null, 'Inicio de sesión exitoso.')
+
+        return handleResponse.response(res, 200, res.locals.response, 'Inicio de sesión exitoso.')
     } catch (error) {
         console.log(error)
         return handleResponse.response(res, 500, null)

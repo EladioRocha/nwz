@@ -6,20 +6,36 @@ const path = require('path'),
 
 async function validBook(req, res, next) {
     try {
-        const _id = req.body.book
+        const bookId = req.body.book
 
-        if(!validator.isMongoId(_id)) {
+        if(!validator.isMongoId(bookId)) {
             return handleResponse.response(res, 400, null, 'El libro seleccionado es invalido.')
         } else {
-            const book = await Book.findOne({_id: mongoose.Types.ObjectId(_id)}).select('borrowed user_id')
+            const book = await Book.findOne({bookId: mongoose.Types.ObjectId(bookId)}).select('borrowed user_id')
             if(!book) {
                 return handleResponse.response(res, 400, null, 'El libro seleccionado no existe.')
             }
-            res.locals.data.book = _id
+            res.locals.data.book = bookId
             res.locals.data.userId = book.user_id
             res.locals.data.borrowed = book.borrowed
         }
         
+        next()
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+async function validReport(req, res, next) {
+    try {
+        const problem = req.body.problem.trim(' '),
+            optionsLengthProblem = {min: 10, max: 255};
+
+        if(!validator.isLength(problem, optionsLengthProblem)) {
+            return handleResponse.response(res, 400, null, 'El problema es demasiado corto.')
+        }
+
         next()
     } catch (error) {
         console.log(error)
@@ -47,5 +63,6 @@ function isFree(req, res, next) {
 module.exports = {
     validBook,
     borrowedBook,
-    isFree
+    isFree,
+    validReport
 }

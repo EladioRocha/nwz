@@ -77,7 +77,8 @@ async function existUser(req, res, next) {
 
 async function login(req, res, next) {
     try {
-        const email = validator.escape(req.body.user).toLowerCase(),
+        console.log(req.body)
+        const email = validator.escape(req.body.email).toLowerCase(),
             password = req.body.password;
 
         const data = await User.findOne({
@@ -85,10 +86,23 @@ async function login(req, res, next) {
         }).select('firstname lastname username email password')
 
         if (!data || !bcrypt.compareSync(password, data.password)) {
+            console.log('entro aqui xD')
             return res.status(400).json({ data: { message: 'Nombre de usuario o contraseña incorrectos.', status: 400, statusText: 'Bad Request' } })
         }
 
-        res.locals.data = { _id: data._id, token: generateToken({ _id: data._id, firstname: data.firstname, lastname: data.lastname, username: data.username, email: data.email }) }
+        const token = generateToken({ _id: data._id, firstname: data.firstname, lastname: data.lastname, username: data.username, email: data.email}) 
+        res.locals.data = { 
+            _id: data._id,
+            token
+        }
+
+        res.locals.response = {
+            firstname: data.firstname,
+            lastname: data.lastname,
+            username: data.username,
+            email: data.email,
+            token
+        }
 
         next()
     } catch (error) {

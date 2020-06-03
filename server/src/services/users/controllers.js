@@ -56,9 +56,19 @@ async function breakFreeBook(req, res) {
     } catch (error) {
         console.log(error)
         return handleResponse.response(res, 500, null)
-    }}
+    }
+}
+
+async function createReport(req, res) {
+    try {
+        return handleResponse.response(res, 200, null, 'Tú reporte ha sido enviado con exito.')
+    } catch (error) {
+        return handleResponse.response(res, 500, null)
+    }
+}
 
 module.exports = {
     createRecord,
-    breakFreeBook
+    breakFreeBook,
+    createReport
 }
