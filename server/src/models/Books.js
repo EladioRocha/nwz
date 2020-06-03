@@ -9,8 +9,8 @@ const BookSchema = new mongoose.Schema({
     title: {type: String, required: true, minlength: 2, maxlength: 255},
     isbn: {type: String, maxlength: 15},
     number_pages: {type: Number, required: true, min: 1, max: 10000},
-    publication_date: {type: Date, required: true},
     summary: {type: String, required: true, minlength: 10, maxlength: 1000},
+    picture: {type: String, required: true, default: 'default.png', maxlength: 255},
     borrowed: {type: Boolean, required: true, default: false},
     rank: [{
         user_id: {type: mongoose.Types.ObjectId, required: true, ref: 'User'},
