@@ -1,4 +1,5 @@
 <app-header-recent-books></app-header-recent-books>
+
 <section class="mt-5">
   <div class="container mx-auto">
     <div class="flex">
@@ -20,8 +21,81 @@
       </div>
     </div>
   </div>
-  <button class="btn-upload-book w-full bg-red-400 text-gray-100 font-semibold w-12 h-12 rounded-full focus:outline-none">
+  <button class="btn-upload-book w-full bg-red-400 text-gray-100 font-semibold w-12 h-12 rounded-full focus:outline-none" (click)="showModal()">
     Up
   </button>
 </section>
+<app-modal [visible]="modal" (hide)="hideModal($event)">
+  <div class="header">
+    Sube un libro
+  </div>
+  <div class="content py-2 px-4">
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-title" >
+        Título
+      </label>
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica" id="book-title">
+    </div>
+
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-author" >
+        Autor
+      </label>
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica" id="book-author">
+    </div>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-isbn" >
+        ISBN
+      </label>
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica" id="book-isbn">
+    </div>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-number-pages" >
+        Número de páginas.
+      </label>
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica" id="book-number-pages">
+    </div>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-summary" >
+        Resumen.
+      </label>
+      <textarea class="resize-none appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica es un tema apasionante debido a todo lo que involucra..." id="book-summary"></textarea>
+    </div>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-genre" >
+        Género
+      </label>
+      <select
+      class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+      id="book-genre">
+        <option value="genre.name" data-id="genre._id" *ngFor="let genre of genres">{{genre.name}}</option>
+      </select>
+    </div>
+    <div class="w-full flex">
+      <div class="w-1/2 mr-2">
+        <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-format" >
+          Formato
+        </label>
+        <select
+        class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+        id="book-format">
+          <option>Ensayo</option>
+          <option>Terror</option>
+        </select>
+          </div>
+      <div class="w-1/2">
+        <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-language" >
+          Idioma
+        </label>
+        <select
+        class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+        id="book-language">
+          <option>Ensayo</option>
+          <option>Terror</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="uploadBook()">Publicar</button>
+</app-modal>
 <app-footer></app-footer>

@@ -9,9 +9,88 @@
         id="searcher" type="text" placeholder="Buscar libro por título o ISBN" autocomplete="off">
     </div>
     <div class="w-1/6 my-auto">
-      <button (click)="showModal()" class="w-full bg-orange-100 text-gray-700 font-semibold py-2 px-4 rounded focus:outline-none">Entrar</button>
+      <div *ngIf="!_user.user">
+        <button (click)="showModal()" class="w-full bg-orange-100 text-gray-700 font-semibold py-2 px-4 rounded focus:outline-none">Entrar</button>
+      </div>
+      <div class="flex justify-end" *ngIf="_user.user">
+        <div class="bg-white rounded-full h-10 w-10" routerLink="/usuarios/chat">
+          Notif
+        </div>
+        <div class="bg-white rounded-full h-10 w-10 ml-4" routerLink="/perfil">
+          Pict
+        </div>
+      </div>
     </div>
   </div>
 </nav>
 
-<app-modal [visible]="modal" (hide)="hideModal($event)"></app-modal>
+<app-modal [visible]="modal" (hide)="hideModal($event)">
+  <div class="header">
+    <ul class="flex border-b justify-center">
+      <li class="flex-1 -mb-px mr-1 mx-auto cursor-pointer" (click)="showLoginForm = true">
+        <a class="w-full text-center bg-white inline-block py-2 px-4 text-gray-700 hover:text-blue-800 font-semibold">Iniciar sesión</a>
+      </li>
+      <li class="flex-1 mr-1 center cursor-pointer" (click)="showLoginForm = false">
+        <a class="w-full text-center bg-white inline-block py-2 px-4 text-gray-700 hover:text-blue-800 font-semibold">Registrarse</a>
+      </li>
+    </ul>
+  </div>
+  <!-- ========== CONTENT LOGIN ========== -->
+  <div class="content py-2 px-4" *ngIf=showLoginForm>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="login-email" >
+        Correo
+      </label>
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="jhon@doe.com" id="login-email">
+    </div>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="login-password">
+        Contraseña
+      </label>
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="password" placeholder="********" id="login-password">
+    </div>
+  </div>
+  <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" *ngIf="showLoginForm" (click)="login()">Entrar</button>
+  <!-- ========== END CONTENT LOGIN ========== -->
+  <!-- ========== CONTENT REGISTER ========== -->
+  <div class="content py-2 px-4" *ngIf=!showLoginForm>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="register-firstname">
+        Nombre(s)
+      </label>
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="Jhon" id="register-firstname">
+    </div>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="register-lastname">
+        Apellido(s)
+      </label>
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="Doe" id="register-lastname">
+    </div>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="register-username">
+        Usuario
+      </label>
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="JhonDoe99" id="register-username">
+    </div>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="register-email">
+        Correo
+      </label>
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="jhon@doe.com" id="register-email">
+    </div>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="register-password">
+        Contraseña
+      </label>
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="password" placeholder="********" id="register-password">
+    </div>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="register-confirm-password">
+        Confirmar contraseña
+      </label>
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="password" placeholder="********" id="register-confirm-password">
+    </div>
+  </div>
+  <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" *ngIf="!showLoginForm" (click)="register()">Registrar</button>
+  <!-- ========== END CONTENT REGISTER ========== -->
+</app-modal>

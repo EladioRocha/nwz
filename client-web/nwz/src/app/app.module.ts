@@ -15,10 +15,13 @@ import { FooterComponent } from './components/footer/footer.component';
 import { ProfileHeaderComponent } from './components/profile-header/profile-header.component';
 import { ProfileSidenavComponent } from './components/profile-sidenav/profile-sidenav.component';
 import { ModalComponent } from './components/modal/modal.component';
+import { HttpClientModule } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
 // import { UsersChatComponent } from './components/users-chat/users-chat.component';
 // import { ProfileReportsComponent } from './components/profile-reports/profile-reports.component';
 // import { ProfileBooksComponent } from './components/profile-books/profile-books.component';
 // import { ProfileHistoryComponent } from './components/profile-history/profile-history.component';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 @NgModule({
   declarations: [
@@ -43,9 +46,11 @@ import { ModalComponent } from './components/modal/modal.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
+    PdfViewerModule
   ],
-  providers: [],
+  providers: [ CookieService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

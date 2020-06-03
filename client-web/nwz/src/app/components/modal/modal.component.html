@@ -2,14 +2,16 @@
     <div class="modal-container">
         <div class="py-2 px-4">
             <div class="modal-header">
-                <ng-content select="h2"></ng-content>
-                <span (click)="hideModal()">X</span>
+                <ng-content select=".header"></ng-content>
             </div>
             <div class="modal-body">
                 <ng-content select=".content"></ng-content>
             </div>
             <div class="modal-footer">
-                <ng-content select=".footer"></ng-content>
+                <div class="w-full py-2 px-4 flex">
+                    <ng-content select=".footer"></ng-content>
+                    <button (click)="hideModal()" class="bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none">Cerrar</button>
+                </div>
             </div>
         </div>
     </div>
