@@ -1,10 +1,12 @@
 const path = require('path'),
     bodyParser = require('body-parser'),
     morgan = require('morgan'),
+    cors = require('cors'),
     express = require('express'),
     app = express();
 
 app.use(morgan('dev'))
+app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
