@@ -22,6 +22,9 @@ import { CookieService } from 'ngx-cookie-service';
 // import { ProfileBooksComponent } from './components/profile-books/profile-books.component';
 // import { ProfileHistoryComponent } from './components/profile-history/profile-history.component';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { BookFormatPipe } from './pipes/book-format.pipe';
+import { BookRankPipe } from './pipes/book-rank.pipe';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -40,6 +43,8 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
     // ProfileHistoryComponent,
     routingComponents,
     ModalComponent,
+    BookFormatPipe,
+    BookRankPipe,
     // UsersChatComponent,
     // ProfileReportsComponent,
     // ProfileBooksComponent
@@ -48,7 +53,8 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    PdfViewerModule
+    PdfViewerModule,
+    FontAwesomeModule
   ],
   providers: [ CookieService ],
   bootstrap: [AppComponent]

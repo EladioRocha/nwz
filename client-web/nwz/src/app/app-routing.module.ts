@@ -12,7 +12,7 @@ import { UsersChatComponent } from './components/users-chat/users-chat.component
 const routes: Routes = [
   {path: '', redirectTo: 'libros', pathMatch: 'full'},
   {path: 'libros', component: BooksComponent, pathMatch: 'full'},
-  {path: 'libros/1', component: BookSingleComponent, pathMatch: 'full'},
+  {path: 'libros/:id', component: BookSingleComponent},
   {path: 'perfil', component: ProfileComponent, pathMatch: 'full'},
   {path: 'perfil/historial', component: ProfileHistoryComponent, pathMatch: 'full'},
   {path: 'perfil/libros', component: ProfileBooksComponent, pathMatch: 'full'},

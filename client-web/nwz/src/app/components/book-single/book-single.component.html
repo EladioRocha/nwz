@@ -5,10 +5,10 @@
       <app-categories class="w-1/5 px-4"></app-categories>
       <div class="w-4/5 books flex flex-wrap">
         <div class="w-full book-info flex flex-wrap">
-          <h1 class="w-full text-4xl text-gray-700 font-bold">Título del libro xD</h1>
+          <h1 class="w-full text-4xl text-gray-700 font-bold">{{ book?.title }}</h1>
           <div class="book-image w-1/2">
             <div class="image pr-4">
-              <img class="w-full" src="https://picsum.photos/id/0/300/500" alt="Image">
+              <img class="w-full" src="https://i.harperapps.com/covers/9780062951366/x510.jpg" alt="Image">
             </div>
             <div class="book-options pr-4 flex mt-2">
                 <button class="w-1/2 mr-1 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none">Solicitar EPUB</button>
@@ -17,20 +17,19 @@
             </div>
           </div>
           <div class="book-info w-1/2">
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Autor: </span>Panfilo</p>
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Categoría(s): </span>Tecnología</p>
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Número de páginas: </span>274</p>
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Idioma: </span>Español</p>
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Disponibilidad: </span>Físico - Digital</p>
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Fecha de lanzamiento: </span>11/04/2015</p>
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">ISBN: </span>01255564851</p>
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Resumen: </span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio itaque alias architecto in esse pariatur quaerat doloribus beatae eum facilis earum, porro iusto minus molestiae, excepturi fugiat repudiandae assumenda reiciendis!</p>
+            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Autor: </span>{{ book?.author_id.name}}</p>
+            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Género: </span>{{ book?.genre_id.name }}</p>
+            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Número de páginas: </span>{{ book?.number_pages }}</p>
+            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Idioma: </span>{{ book?.language_id.name }}</p>
+            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Disponibilidad: </span>{{ book?.format_id | bookFormat }}</p>
+            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">ISBN: </span>{{ book?.isbn }}</p>
+            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Resumen: </span>{{ book?.summary }}</p>
             <div class="w-full">
-              <a class="text-4xl" routerLink="/libros/1">&#9733;</a>
-              <a class="text-4xl" routerLink="/libros/1">&#9733;</a>
-              <a class="text-4xl" routerLink="/libros/1">&#9733;</a>
-              <a class="text-4xl" routerLink="/libros/1">&#9733;</a>
-              <a class="text-4xl" routerLink="/libros/1">&#9734;</a>
+              <a class="text-4xl cursor-pointer" (click)="updateRank(1)"><fa-icon [icon]="book?.rank | bookRank: 1" size="lg"></fa-icon></a>
+              <a class="text-4xl cursor-pointer" (click)="updateRank(2)"><fa-icon [icon]="book?.rank | bookRank: 2" size="lg"></fa-icon></a>
+              <a class="text-4xl cursor-pointer" (click)="updateRank(3)"><fa-icon [icon]="book?.rank | bookRank: 3" size="lg"></fa-icon></a>
+              <a class="text-4xl cursor-pointer" (click)="updateRank(4)"><fa-icon [icon]="book?.rank | bookRank: 4" size="lg"></fa-icon></a>
+              <a class="text-4xl cursor-pointer" (click)="updateRank(5)"><fa-icon [icon]="book?.rank | bookRank: 5" size="lg"></fa-icon></a>
             </div>
           </div>
         </div>

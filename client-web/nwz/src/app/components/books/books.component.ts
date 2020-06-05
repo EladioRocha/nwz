@@ -1,19 +1,34 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
-import { Genre } from '../../common/interfaces'
+import { Genre, Format, Language, BooksBunch } from '../../common/interfaces'
 
 @Component({
   selector: 'app-books',
   templateUrl: './books.component.html',
   styleUrls: ['./books.component.scss']
 })
-export class BooksComponent {
+export class BooksComponent implements OnInit {
   public modal: boolean
   public genres: Genre[]
+  public formats: Format[]
+  public languages: Language[]
+  public books: BooksBunch
   // pdfSrc = "https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf";
 
   constructor(private _api: ApiService) { 
     this.modal = false
+  }
+
+  ngOnInit(): void {
+    this._api.getBunchOfBooks().subscribe(response => this.booksResponse(response))
+  }
+
+  booksResponse(response) {
+    if(response.status !== 200) {
+      return false
+    }
+    this.books = response.data
+    console.log(this.books)
   }
 
   hideModal(e: boolean /** Event e: boolean */) {
@@ -21,16 +36,33 @@ export class BooksComponent {
   }
 
   showModal() {
-    this._api.getAllGenres().subscribe(response => this.genresResponse(response))
+    this._api.handleMultipleGetRequest(this._api.getAllGenres(), this._api.getAllFormats(), this._api.getAllLanguages()).subscribe(response => {
+      this.genresResponse(response[0])
+      this.formatsReponse(response[1])
+      this.languagesResponse(response[2])
+    })
     this.modal = true
   }
 
   genresResponse(response) {
     if(response.status !== 200) {
-
       return false
     }
     this.genres = response.data
+  }
+
+  formatsReponse(response) {
+    if(response.status !== 200) {
+      return false
+    }
+    this.formats = response.data
+  }
+
+  languagesResponse(response) {
+    if(response.status !== 200) {
+      return false
+    }
+    this.languages = response.data
   }
 
   uploadBook() {

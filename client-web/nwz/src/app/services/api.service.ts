@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { AuthenticationLoginResponse, DataNullResponse, GenresResponse } from '../common/interfaces'
+import { AuthenticationLoginResponse, DataNullResponse, GenresResponse, FormatsResponse, LanguagesResponse, BooksBunchResponse, BookResponse } from '../common/interfaces'
 import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
@@ -52,6 +52,21 @@ export class ApiService {
       language
     }, this.setHeaders())
   }
+
+  getBunchOfBooks(): Observable<BooksBunchResponse> {
+    return this._http.get<BooksBunchResponse>(`${this.API_URL}/books`)
+  }
+
+  getSingleBook(id: string): Observable<BookResponse> {
+    return this._http.get<BookResponse>(`${this.API_URL}/books/${id}`)
+  }
+
+  updateRank(qualification: number, book: string): Observable<DataNullResponse>{
+    return this._http.put<DataNullResponse>(`${this.API_URL}/books/rank`, {
+      qualification,
+      book
+    }, this.setHeaders())
+  }
   /** ==================== END BOOKS ==================== **/
 
 
@@ -61,7 +76,24 @@ export class ApiService {
   }
   /** ==================== END GENRES ==================== **/
 
+  
+  /** ==================== FORMATS ==================== **/
+  getAllFormats(): Observable<FormatsResponse> {
+    return this._http.get<FormatsResponse>(`${this.API_URL}/formats`)
+  }
+  /** ==================== END FORMATS ==================== **/
 
+
+  /** ==================== LANGUAGES ==================== **/
+  getAllLanguages(): Observable<LanguagesResponse> {
+    return this._http.get<LanguagesResponse>(`${this.API_URL}/languages`)
+  }
+  /** ==================== END LANGUAGES ==================== **/
+
+  handleMultipleGetRequest(...responses): Observable<any[]> {
+    return forkJoin(responses)
+  }
+  
   setHeaders() {
     return {
       headers: new HttpHeaders().set('Authorization', `Bearer ${this._cookieService.get('token')}`)
