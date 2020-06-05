@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'),
+    mongoosePaginate = require('mongoose-paginate-v2');
 
 const BookSchema = new mongoose.Schema({
     genre_id: {type: mongoose.Types.ObjectId, required: true, ref: 'Genre'},
@@ -21,5 +22,7 @@ const BookSchema = new mongoose.Schema({
     created_at: {type: Date, required: true, default: Date.now},
     updated_at: {type: Date, required: true, default: Date.now}
 })
+
+BookSchema.plugin(mongoosePaginate)
 
 module.exports = mongoose.model('Book', BookSchema)

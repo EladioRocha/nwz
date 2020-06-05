@@ -5,8 +5,21 @@ const path = require('path'),
 
 async function getBooks(req, res) {
     try {
-        const books = await Book.find({}).populate('format_id genre_id', 'name').select('title genre_id format_id borrowed').limit(16)
-        return handleResponse.response(res, 200, books)
+        const page = req.query.page,
+            offset = page ? parseInt(page - 1) * process.env.BOOKS_PER_PAGE : 0,
+            options = {
+                offset,
+                limit: process.env.BOOKS_PER_PAGE,
+                select: 'title genre_id format_id borrowed picture',
+                populate: {
+                    path: 'genre_id format_id', 
+                    select: '_id name'
+                }
+            }
+
+        const book = await Book.paginate({}, options)
+        console.log(book)
+        return handleResponse.response(res, 200, book.docs)
     } catch (error) {
         console.log(error)
         return handleResponse.response(res, 500, null)
@@ -16,12 +29,66 @@ async function getBooks(req, res) {
 async function getBook(req, res) {
     try {
         const _id = mongoose.Types.ObjectId(req.params._id)
-        console.log(req.params)
-        const book = await Book.findOne({_id})
-            .populate('author_id genre_id language_id format_id user_id', 'name')
-            .populate('user_id', 'username')
-            .select('title genre_id language_id format_id user_id number_pages publication_date isbn summary rank borrowed')
-        return handleResponse.response(res, 200, book)
+        const book = await Book.aggregate([
+            {$match: {_id}},
+            {$lookup: {
+                from: 'authors',
+                localField: 'author_id',
+                foreignField: '_id',
+                as: 'author_id'
+            }},
+            {$lookup: {
+                from: 'formats',
+                localField: 'format_id',
+                foreignField: '_id',
+                as: 'format_id'
+            }},
+            {$lookup: {
+                from: 'genres',
+                localField: 'genre_id',
+                foreignField: '_id',
+                as: 'genre_id'
+            }},
+            {$lookup: {
+                from: 'languages',
+                localField: 'language_id',
+                foreignField: '_id',
+                as: 'language_id'
+            }},
+            {$lookup: {
+                from: 'users',
+                localField: 'user_id',
+                foreignField: '_id',
+                as: 'user_id'
+            }},
+            {$unwind: '$author_id'},
+            {$unwind: '$genre_id'},
+            {$unwind: '$language_id'},
+            {$unwind: '$user_id'},
+            {$addFields: {
+                rank: {$avg: '$rank.qualification'},
+            }},
+            {$project: {
+                '_id': 1,
+                'title': 1,
+                'isbn': 1,
+                'number_pages': 1,
+                'summary': 1,
+                'borrowed': 1,
+                'author_id._id': 1,
+                'author_id.name': 1,
+                'format_id._id': 1,
+                'format_id.name': 1,
+                'genre_id._id': 1,
+                'genre_id.name': 1,
+                'language_id._id': 1,
+                'language_id.name': 1,
+                'user_id._id': 1,
+                'user_id.username': 1,
+                'rank': {$trunc: ['$rank', 0]}
+            }}
+        ])
+        return handleResponse.response(res, 200, book[0])
     } catch (error) {
         console.log(error)
         return handleResponse.response(res, 500, null)
