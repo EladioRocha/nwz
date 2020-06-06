@@ -25,6 +25,11 @@ async function validDataBook(req, res, next) {
             optionsLengthIsbn = {min: 0, max: 15},
             optionsLenghtSummary = {min: 10, max: 1000};
 
+            console.log(formats)
+        if(formats === 'Ambos') {
+
+        }
+
         if(!validator.isLength(title, optionsLenghtTitle)) {
             return handleResponse.response(res, 400, null, 'El título es muy corto.')
         }
@@ -41,8 +46,8 @@ async function validDataBook(req, res, next) {
             return handleResponse.response(res, 400, null, 'El nombre del autor ingresado es muy corto.')
         }
 
-        const genreDB = await Genre.findOne({name: genre}).select('name'),
-            languageDB = await Language.findOne({name: language}).select('name'),
+        const genreDB = await Genre.findOne({_id: mongoose.Types.ObjectId(genre)}).select('name'),
+            languageDB = await Language.findOne({_id: mongoose.Types.ObjectId(language)}).select('name'),
             formatsDB = await Format.find({}).select('name'),
             authorDB = await Author.findOneAndUpdate(
                 {name: author},
@@ -61,10 +66,10 @@ async function validDataBook(req, res, next) {
         }
 
         res.locals.data = {
-            genre_id: genreDB._id,
-            language_id: languageDB._id,
+            genre_id: mongoose.Types.ObjectId(genreDB._id),
+            language_id: mongoose.Types.ObjectId(languageDB._id),
             format_id: formats.pop(),
-            author_id: authorDB._id,
+            author_id: mongoose.Types.ObjectId(authorDB._id),
             user_id: mongoose.Types.ObjectId(userId),
             title,
             isbn,
@@ -85,7 +90,7 @@ function isValidFormat(formats, formatsDB) {
 
     for(let format of formats) {
         for(let formatDB of formatsDB) {
-            if(format === formatDB.name) {
+            if(format === formatDB._id.toString()) {
                 data.push(formatDB._id)
                 validFormat = true
                 break
@@ -122,5 +127,5 @@ async function validQualificationBook(req, res, next) {
 
 module.exports = {
     validDataBook,
-    validQualificationBook
+    validQualificationBook,
 }

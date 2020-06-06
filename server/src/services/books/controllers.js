@@ -6,6 +6,7 @@ const path = require('path'),
 async function getBooks(req, res) {
     try {
         const page = req.query.page,
+            genre = req.query.genre,
             offset = page ? parseInt(page - 1) * process.env.BOOKS_PER_PAGE : 0,
             options = {
                 offset,
@@ -16,10 +17,18 @@ async function getBooks(req, res) {
                     select: '_id name'
                 }
             }
-
-        const book = await Book.paginate({}, options)
+        
+        let data
+        if(genre !== 'All') {
+            data = await Book.paginate({genre_id: mongoose.Types.ObjectId(genre)}, options)
+        } else {
+            data = await Book.paginate({}, options)
+        }
+        
+        const book = data.docs;
+        book.push({totalPages: data.totalPages, page: data.page })
         console.log(book)
-        return handleResponse.response(res, 200, book.docs)
+        return handleResponse.response(res, 200, book)
     } catch (error) {
         console.log(error)
         return handleResponse.response(res, 500, null)

@@ -6,12 +6,14 @@ const path = require('path'),
 
 async function validBook(req, res, next) {
     try {
-        const bookId = req.body.book
+        console.log(req.body)
+        const bookId = req.body.book;
 
         if(!validator.isMongoId(bookId)) {
             return handleResponse.response(res, 400, null, 'El libro seleccionado es invalido.')
         } else {
-            const book = await Book.findOne({bookId: mongoose.Types.ObjectId(bookId)}).select('borrowed user_id')
+            const book = await Book.findOne({_id: mongoose.Types.ObjectId(bookId)}).select('borrowed user_id')
+            console.log(book)
             if(!book) {
                 return handleResponse.response(res, 400, null, 'El libro seleccionado no existe.')
             }
@@ -45,7 +47,7 @@ async function validReport(req, res, next) {
 
 function borrowedBook(req, res, next) {
     if(res.locals.data.borrowed) {
-        return handleResponse.response(res, 400, null, 'El libro seleccionado ya se encuentra usado por otro usuario.')
+        return handleResponse.response(res, 400, null, 'El libro seleccionado ya se encuentra en prestamo por otro usuario.')
     }
 
     next()
@@ -53,16 +55,37 @@ function borrowedBook(req, res, next) {
 
 function isFree(req, res, next) {
     if(!res.locals.data.borrowed) {
-        return handleResponse.response(res, 400, null, 'El libro no se encuentra en prestamo.')
+        return handleResponse.response(res, 400, null, 'El libro no esta disponible en estos momentos.')
     }
 
     next()
 }
 
+function isValidDays(req, res, next) {
+    const { days } = req.body.days
+    if(days < 1 || days > 7) {
+        return handleResponse.response(res, 400, null, 'Los días ingresados no son validos, ingrese un valor valido.')
+    }
+    
+    res.locals.data.days = days
+
+    next()
+}
+
+function isDifferentUser(req, res, next) {
+    const {_id, userId} = res.locals.data
+    if(_id.toString() === userId.toString()) {
+        return handleResponse.response(res, 400, null, 'No puedes prestar el libro de forma física a ti mismo.')
+    }
+
+    next()
+}
 
 module.exports = {
     validBook,
     borrowedBook,
     isFree,
-    validReport
+    isValidDays,
+    validReport,
+    isDifferentUser
 }

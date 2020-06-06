@@ -7,7 +7,9 @@ const path = require('path'),
 // router.get('/', controller.getAllGenres)
 
 router.post('/record', [middlewareAuth.validToken, middleware.validBook, middleware.borrowedBook], controller.createRecord)
-router.put('/record', [middlewareAuth.validToken, middleware.validBook, middleware.isFree], controller.breakFreeBook)
 router.post('/report', [middlewareAuth.validToken, middleware.validBook, middleware.validReport], controller.createReport)
+router.post('/chat', [middlewareAuth.validToken, middleware.validBook, middleware.isDifferentUser], controller.beginChat)
+
+router.put('/record', [middlewareAuth.validToken, middleware.validBook, middleware.isValidDays, middleware.isFree], controller.breakFreeBook)
 
 module.exports = router
