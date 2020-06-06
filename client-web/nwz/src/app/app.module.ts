@@ -25,6 +25,8 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { BookFormatPipe } from './pipes/book-format.pipe';
 import { BookRankPipe } from './pipes/book-rank.pipe';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { BookBorrowedPipe } from './pipes/book-borrowed.pipe';
+import { PaginationPipe } from './pipes/pagination.pipe';
 
 @NgModule({
   declarations: [
@@ -45,6 +47,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     ModalComponent,
     BookFormatPipe,
     BookRankPipe,
+    BookBorrowedPipe,
+    PaginationPipe,
     // UsersChatComponent,
     // ProfileReportsComponent,
     // ProfileBooksComponent

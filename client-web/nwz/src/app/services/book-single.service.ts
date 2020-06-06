@@ -4,8 +4,11 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class BookSingleService {
-  public id: string
+  public book: string
   public rank: number
+  public days: number
   
-  constructor() { }
+  constructor() { 
+    this.days = 1
+  }
 }

@@ -10,7 +10,10 @@ export class BookCardComponent {
   @Input() _id: string
   @Input() title: string
   @Input() formats: Format[]
+  @Input() genre: string
   @Input() borrowed: boolean
 
-  constructor() {}
+  constructor() {
+    
+  }
 }

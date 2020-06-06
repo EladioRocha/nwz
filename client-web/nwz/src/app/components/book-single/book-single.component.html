@@ -1,22 +1,21 @@
 
 <section class="mt-5">
   <div class="container mx-auto">
-    <div class="flex">
-      <app-categories class="w-1/5 px-4"></app-categories>
-      <div class="w-4/5 books flex flex-wrap">
+    <div class="flex py-2 px-4">
+      <!-- <app-categories class="w-1/5 px-4"></app-categories> -->
+      <div class="w-full books flex flex-wrap">
         <div class="w-full book-info flex flex-wrap">
-          <h1 class="w-full text-4xl text-gray-700 font-bold">{{ book?.title }}</h1>
-          <div class="book-image w-1/2">
+          <h1 class="w-full text-3xl text-gray-700 font-bold">{{ book?.title }}</h1>
+          <div class="book-image w-1/4">
             <div class="image pr-4">
               <img class="w-full" src="https://i.harperapps.com/covers/9780062951366/x510.jpg" alt="Image">
             </div>
             <div class="book-options pr-4 flex mt-2">
-                <button class="w-1/2 mr-1 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none">Solicitar EPUB</button>
-                <button class="w-1/2 ml-1 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none">Solicitar fisico</button>
-                <a class="ml-1 w-4 py-2 px-4 text-red-400">&#9873;</a>
+                <button class="w-1/2 mr-1 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(true)">Solicitar PDF</button>
+                <button class="w-1/2 ml-1 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(false)">Solicitar fisico</button>
             </div>
           </div>
-          <div class="book-info w-1/2">
+          <div class="book-info w-3/4">
             <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Autor: </span>{{ book?.author_id.name}}</p>
             <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Género: </span>{{ book?.genre_id.name }}</p>
             <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Número de páginas: </span>{{ book?.number_pages }}</p>
@@ -25,11 +24,11 @@
             <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">ISBN: </span>{{ book?.isbn }}</p>
             <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Resumen: </span>{{ book?.summary }}</p>
             <div class="w-full">
-              <a class="text-4xl cursor-pointer" (click)="updateRank(1)"><fa-icon [icon]="book?.rank | bookRank: 1" size="lg"></fa-icon></a>
-              <a class="text-4xl cursor-pointer" (click)="updateRank(2)"><fa-icon [icon]="book?.rank | bookRank: 2" size="lg"></fa-icon></a>
-              <a class="text-4xl cursor-pointer" (click)="updateRank(3)"><fa-icon [icon]="book?.rank | bookRank: 3" size="lg"></fa-icon></a>
-              <a class="text-4xl cursor-pointer" (click)="updateRank(4)"><fa-icon [icon]="book?.rank | bookRank: 4" size="lg"></fa-icon></a>
-              <a class="text-4xl cursor-pointer" (click)="updateRank(5)"><fa-icon [icon]="book?.rank | bookRank: 5" size="lg"></fa-icon></a>
+              <a class="text-4xl cursor-pointer" (click)="updateRank(1)"><fa-icon [icon]="book?.rank | bookRank: 1" size="md"></fa-icon></a>
+              <a class="text-4xl cursor-pointer" (click)="updateRank(2)"><fa-icon [icon]="book?.rank | bookRank: 2" size="md"></fa-icon></a>
+              <a class="text-4xl cursor-pointer" (click)="updateRank(3)"><fa-icon [icon]="book?.rank | bookRank: 3" size="md"></fa-icon></a>
+              <a class="text-4xl cursor-pointer" (click)="updateRank(4)"><fa-icon [icon]="book?.rank | bookRank: 4" size="md"></fa-icon></a>
+              <a class="text-4xl cursor-pointer" (click)="updateRank(5)"><fa-icon [icon]="book?.rank | bookRank: 5" size="md"></fa-icon></a>
             </div>
           </div>
         </div>
@@ -37,4 +36,28 @@
     </div>
   </div>
 </section>
+<app-modal [visible]="modal" (hide)="hideModal($event)">
+  <!-- EBOOK -->
+  <div class="content py-2 px-4" *ngIf="requestDigital">
+    <div class="w-full">
+      <select
+        class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+        id="book-single-day" (change)="getDays($event.target.value)">
+        <option value="{{ day }}" *ngFor="let day of days">{{ day }}</option>
+      </select>
+    </div>
+  </div>
+  <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="requestBook()" *ngIf="requestDigital">Solicitar</button>
+  <!-- END EBOOK -->
+
+
+  <!-- BOOK -->
+  <div class="content py-2 px-4" *ngIf="!requestDigital">
+    <div class="w-full">
+      <p class="text-lg">¿Realmente deseas solicitar el libro de forma física? <span class="font-semibold">Se abrirá un chat</span> con el dueño del libro.</p>
+    </div>
+  </div>
+  <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="sendMessage()" *ngIf="!requestDigital">¡Si, lo quiero!</button>
+  <!-- END BOOK -->
+</app-modal>
 <app-footer></app-footer>

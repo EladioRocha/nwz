@@ -2,20 +2,28 @@
 
 <section class="mt-5">
   <div class="container mx-auto">
-    <div class="flex">
-      <app-categories class="w-1/5 px-4"></app-categories>
-      <div class="w-4/5 books flex flex-wrap">
+    <div class="flex flex-wrap">
+      <!-- <app-categories class="w-1/5 px-4"></app-categories> -->
+      <div class="w-full py-2 px-4">
+        <select
+        class="bg-red-400 appearance-none rounded mb-2 py-2 px-4 text-gray-100 leading-tight focus:outline-none" (change)="filterBooksByGenre($event.target.value)">
+          <option value="All">Todos</option>
+          <option value="{{genre._id}}" *ngFor="let genre of genres">{{genre.name}}</option>
+        </select>
+      </div>
+      <div class="w-full books flex flex-wrap">
         <div class="w-full recent-books flex flex-wrap">
-          <app-book-card class="w-1/4 px-4 mb-2" *ngFor="let book of books" [_id]="book._id" [title]="book.title" [formats]="book.formats" [borrowed]="book.borrowed"></app-book-card>
+          <app-book-card class="w-1/4 px-4 mb-2" *ngFor="let book of books" [_id]="book._id" [title]="book.title" [formats]="book.format_id" [borrowed]="book.borrowed" [genre]="book.genre_id.name"></app-book-card>
+          <p class="py-2 px-4 text-3xl" *ngIf="existBooks">No se encontraron libros en esta categoría :( intentalo con otra.</p>
         </div>
         <div class="w-full pagination-books px-4 text-center">
-          <app-pagination></app-pagination>
+          <app-pagination [page]="page" [totalPages]="totalPages" (click)="getBunchOfBooks()"></app-pagination>
         </div>
       </div>
     </div>
   </div>
   <button class="btn-upload-book w-full bg-red-400 text-gray-100 font-semibold w-12 h-12 rounded-full focus:outline-none" (click)="showModal()">
-    Up
+    <fa-icon [icon]="['fas', 'file-upload']" size="lg"></fa-icon>
   </button>
 </section>
 <app-modal [visible]="modal" (hide)="hideModal($event)">
@@ -61,7 +69,7 @@
       <select
       class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
       id="book-genre">
-        <option value="{{genre.name}}" data-id="{{genre._id}}" *ngFor="let genre of genres">{{genre.name}}</option>
+        <option value="{{genre._id}}" *ngFor="let genre of genres">{{genre.name}}</option>
       </select>
     </div>
     <div class="w-full flex">
@@ -72,7 +80,8 @@
         <select
         class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
         id="book-format">
-          <option value="{{format.name}}" data-id="{{format._id}}" *ngFor="let format of formats">{{format.name}}</option>
+          <option value="Ambos">Ambos</option>
+          <option value="{{format._id}}" *ngFor="let format of formats">{{format.name}}</option>
         </select>
           </div>
       <div class="w-1/2">
@@ -82,7 +91,7 @@
         <select
         class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
         id="book-language">
-        <option value="{{language.name}}" data-id="{{language._id}}" *ngFor="let language of languages">{{language.name}}</option>
+        <option value="{{language._id}}" *ngFor="let language of languages">{{language.name}}</option>
       </select>
       </div>
     </div>

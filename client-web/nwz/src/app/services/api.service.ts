@@ -53,8 +53,8 @@ export class ApiService {
     }, this.setHeaders())
   }
 
-  getBunchOfBooks(): Observable<BooksBunchResponse> {
-    return this._http.get<BooksBunchResponse>(`${this.API_URL}/books`)
+  getBunchOfBooks(page: number = 1, genre: string = 'All'): Observable<BooksBunchResponse> {
+    return this._http.get<BooksBunchResponse>(`${this.API_URL}/books?page=${page}&genre=${genre}`)
   }
 
   getSingleBook(id: string): Observable<BookResponse> {
@@ -68,6 +68,22 @@ export class ApiService {
     }, this.setHeaders())
   }
   /** ==================== END BOOKS ==================== **/
+
+
+  /** ==================== USERS ==================== **/
+  requestBook(book: string, days: number): Observable<DataNullResponse> {
+    return this._http.post<DataNullResponse>(`${this.API_URL}/users/record`, {
+      book,
+      days
+    }, this.setHeaders())
+  }
+
+  sendMessage(book: string): Observable<DataNullResponse> {
+    return this._http.post<DataNullResponse>(`${this.API_URL}/users/chat`, {
+      book
+    }, this.setHeaders())
+  }
+  /** ==================== END USERS ==================== **/
 
 
   /** ==================== GENRES ==================== **/

@@ -1,6 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
 import { Genre, Format, Language, BooksBunch } from '../../common/interfaces'
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { fab } from '@fortawesome/free-brands-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
   selector: 'app-books',
@@ -13,22 +18,40 @@ export class BooksComponent implements OnInit {
   public formats: Format[]
   public languages: Language[]
   public books: BooksBunch
-  // pdfSrc = "https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf";
+  public page: number
+  public totalPages: number
+  public currentPage: number
+  public currentGenre: string
+  public existBooks: boolean
 
-  constructor(private _api: ApiService) { 
+  // pdfSrc = "https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf";
+  @ViewChild('app-pagination') pagination
+
+  constructor(private _api: ApiService, private _route: ActivatedRoute) { 
     this.modal = false
+    library.add(fas, far, fab)
   }
 
   ngOnInit(): void {
-    this._api.getBunchOfBooks().subscribe(response => this.booksResponse(response))
+    this._route.queryParams.subscribe(values => { 
+      this.currentPage = values.pagina
+    })
+    this._api.handleMultipleGetRequest(this._api.getBunchOfBooks(this.currentPage), this._api.getAllGenres()).subscribe(response => {
+      this.booksResponse(response[0])
+      this.genresResponse(response[1])
+    })
   }
 
   booksResponse(response) {
     if(response.status !== 200) {
       return false
     }
+    
+    const paginaiton = response.data.pop()
+    this.page = paginaiton.page
+    this.totalPages = paginaiton.totalPages
     this.books = response.data
-    console.log(this.books)
+    this.existBooks = Object.values(this.books).length === 0
   }
 
   hideModal(e: boolean /** Event e: boolean */) {
@@ -41,6 +64,7 @@ export class BooksComponent implements OnInit {
       this.formatsReponse(response[1])
       this.languagesResponse(response[2])
     })
+
     this.modal = true
   }
 
@@ -49,6 +73,7 @@ export class BooksComponent implements OnInit {
       return false
     }
     this.genres = response.data
+    console.log(this.genres)
   }
 
   formatsReponse(response) {
@@ -74,11 +99,27 @@ export class BooksComponent implements OnInit {
       genre: string = (document.querySelector('#book-genre') as HTMLInputElement).value,
       format: string = (document.querySelector('#book-format') as HTMLInputElement).value,
       language: string = (document.querySelector('#book-language') as HTMLInputElement).value;
-
-    this._api.uploadBook(title, author, isbn, numPages, summary, genre, [...(format === 'Ambos') ? 'PDF,FÍSICO'.split(',') : [format]], language).subscribe(response => this.uploadBookResponse(response))
+                                                                                                        // PDF ID                 // FÍSICO ID
+    this._api.uploadBook(title, author, isbn, numPages, summary, genre, [...(format === 'Ambos') ? '5ecec9791ba037668c2fc64c,5ecec9791ba037668c2fc64e'.split(',') : [format]], language).subscribe(response => this.uploadBookResponse(response))
   }
 
   uploadBookResponse(response) {
+    if(response.status !== 200) {
+      return false
+    }
     console.log(response)
+  }
+
+  getBunchOfBooks() {
+    this._route.queryParams.subscribe(values => {
+      this._api.getBunchOfBooks(values.pagina, this.currentGenre).subscribe(response => this.booksResponse(response))
+    })
+  }
+
+  filterBooksByGenre(genre) {
+    this._route.queryParams.subscribe(values => {
+      this.currentGenre = genre
+      this._api.getBunchOfBooks(values.pagina, this.currentGenre).subscribe(response => this.booksResponse(response))
+    })
   }
 }
