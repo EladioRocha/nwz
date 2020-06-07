@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class BookBorrowedPipe implements PipeTransform {
 
   transform(borrowed: boolean): string {
-    return (!borrowed) ? 'Disponible' : 'Ocupado' 
+    return (!borrowed) ? 'Disponible' : 'No disponible' 
   }
 
 }

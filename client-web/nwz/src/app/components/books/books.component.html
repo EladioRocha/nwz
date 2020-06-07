@@ -1,4 +1,4 @@
-<app-header-recent-books></app-header-recent-books>
+<app-header-recent-books [booksRank]="booksRank"></app-header-recent-books>
 
 <section class="mt-5">
   <div class="container mx-auto">
@@ -13,7 +13,7 @@
       </div>
       <div class="w-full books flex flex-wrap">
         <div class="w-full recent-books flex flex-wrap">
-          <app-book-card class="w-1/4 px-4 mb-2" *ngFor="let book of books" [_id]="book._id" [title]="book.title" [formats]="book.format_id" [borrowed]="book.borrowed" [genre]="book.genre_id.name"></app-book-card>
+          <app-book-card class="w-1/4 px-4 mb-2" *ngFor="let book of books" [_id]="book._id" [title]="book.title" [formats]="book.format_id" [borrowed]="book.borrowed" [genre]="book.genre_id.name" [filename]="book.filename"></app-book-card>
           <p class="py-2 px-4 text-3xl" *ngIf="existBooks">No se encontraron libros en esta categoría :( intentalo con otra.</p>
         </div>
         <div class="w-full pagination-books px-4 text-center">

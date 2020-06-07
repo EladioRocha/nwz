@@ -8,7 +8,7 @@
           <h1 class="w-full text-3xl text-gray-700 font-bold">{{ book?.title }}</h1>
           <div class="book-image w-1/4">
             <div class="image pr-4">
-              <img class="w-full" src="https://i.harperapps.com/covers/9780062951366/x510.jpg" alt="Image">
+              <img class="w-full" src="{{ bookSingle.picture }}" alt="Image">
             </div>
             <div class="book-options pr-4 flex mt-2">
                 <button class="w-1/2 mr-1 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(true)">Solicitar PDF</button>
@@ -40,6 +40,9 @@
   <!-- EBOOK -->
   <div class="content py-2 px-4" *ngIf="requestDigital">
     <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-single-day">
+        Días *
+      </label>
       <select
         class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
         id="book-single-day" (change)="getDays($event.target.value)">
@@ -47,7 +50,7 @@
       </select>
     </div>
   </div>
-  <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="requestBook()" *ngIf="requestDigital">Solicitar</button>
+  <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="requestBook()" *ngIf="requestDigital">Leer</button>
   <!-- END EBOOK -->
 
 

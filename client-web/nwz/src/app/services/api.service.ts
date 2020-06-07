@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { AuthenticationLoginResponse, DataNullResponse, GenresResponse, FormatsResponse, LanguagesResponse, BooksBunchResponse, BookResponse } from '../common/interfaces'
+import { AuthenticationLoginResponse, DataNullResponse, GenresResponse, FormatsResponse, LanguagesResponse, BooksBunch, BooksBunchResponse, BookResponse, BookURLResponse, BookRankResponse } from '../common/interfaces'
 import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
@@ -36,12 +36,16 @@ export class ApiService {
       confirmPassword
     })
   }
+
+  getDataUser(): Observable<AuthenticationLoginResponse> {
+    return this._http.get<AuthenticationLoginResponse>(`${this.API_URL}/authentication`, this.setHeaders())
+  }
   /** ==================== END AUTHENTICATION ==================== **/
 
 
   /** ==================== BOOKS ==================== **/
-  uploadBook(title: string, author: string, isbn: string, numPages: unknown, summary: string, genre: string, format: string[], language: string, book: unknown): Observable<DataNullResponse> {
-    return this._http.post<DataNullResponse>(`${this.API_URL}/books`, {
+  uploadBook(title: string, author: string, isbn: string, numPages: unknown, summary: string, genre: string, format: string[], language: string, book: unknown): Observable<BooksBunch> {
+    return this._http.post<BooksBunch>(`${this.API_URL}/books`, {
       title,
       author,
       isbn,
@@ -67,6 +71,14 @@ export class ApiService {
       qualification,
       book
     }, this.setHeaders())
+  }
+
+  getBookToRead(book: string): Observable<BookURLResponse> {
+    return this._http.get<BookURLResponse>(`${this.API_URL}/books/read/${book}`, this.setHeaders())
+  }
+
+  getRankBooks(): Observable<BookRankResponse> {
+    return this._http.get<BookRankResponse>(`${this.API_URL}/books/rank`)
   }
   /** ==================== END BOOKS ==================== **/
 

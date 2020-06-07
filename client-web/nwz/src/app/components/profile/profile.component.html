@@ -1,4 +1,4 @@
-<app-profile-header></app-profile-header>
+<app-profile-header [username]="_user.user?.username"></app-profile-header>
 <section class="mt-5">
   <div class="container mx-auto">
     <div class="flex">
@@ -9,25 +9,25 @@
           <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="grid-first-name">
             Nombre(s)
           </label>
-          <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" disabled type="text" placeholder="Escribe tu nombre(s)" value="Jhon">
+          <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" disabled type="text" placeholder="Escribe tu nombre(s)" value="{{ _user.user.firstname }}">
         </div>
         <div class="w-1/2">
           <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="grid-first-name">
             Apellido(s)
           </label>
-          <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" disabled type="text" placeholder="Escribe tu apellido(s)" value="Doe">
+          <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" disabled type="text" placeholder="Escribe tu apellido(s)" value="{{ _user.user.lastname }}">
         </div>
         <div class="w-1/2 pr-4">
           <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="grid-first-name">
             Correo
           </label>
-          <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" disabled type="text" placeholder="Escribe tu nombre(s)" value="Jhon">
+          <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" disabled type="text" placeholder="Escribe tu nombre(s)" value="{{ _user.user.email }}">
         </div>
         <div class="w-1/2">
           <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="grid-first-name">
             Contraseña
           </label>
-          <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" disabled type="text" placeholder="Escribe tu apellido(s)" value="Doe">
+          <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" disabled type="text" placeholder="Escribe tu apellido(s)" value="********">
         </div>
         <!-- ========================= INFORMACIÓN DE UBICACIÓN ========================= -->
         <h2 class="w-full text-3xl font-semibold text-gray-700">Información de ubicación</h2>

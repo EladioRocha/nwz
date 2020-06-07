@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
-import { Genre, Format, Language, BooksBunch } from '../../common/interfaces'
+import { Genre, Format, Language, BooksBunch, BooksRank } from '../../common/interfaces'
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
@@ -17,12 +17,13 @@ export class BooksComponent implements OnInit {
   public genres: Genre[]
   public formats: Format[]
   public languages: Language[]
-  public books: BooksBunch
+  public books: BooksBunch[]
   public page: number
   public totalPages: number
   public currentPage: number
   public currentGenre: string
   public existBooks: boolean
+  public booksRank: BooksRank
 
   @ViewChild('app-pagination') pagination
 
@@ -35,9 +36,10 @@ export class BooksComponent implements OnInit {
     this._route.queryParams.subscribe(values => { 
       this.currentPage = values.pagina
     })
-    this._api.handleMultipleGetRequest(this._api.getBunchOfBooks(this.currentPage), this._api.getAllGenres()).subscribe(response => {
+    this._api.handleMultipleGetRequest(this._api.getBunchOfBooks(this.currentPage), this._api.getAllGenres(), this._api.getRankBooks()).subscribe(response => {
       this.booksResponse(response[0])
       this.genresResponse(response[1])
+      this.bookRanksResponse(response[2])
     })
   }
 
@@ -51,6 +53,7 @@ export class BooksComponent implements OnInit {
     this.totalPages = paginaiton.totalPages
     this.books = response.data
     this.existBooks = Object.values(this.books).length === 0
+
   }
 
   hideModal(e: boolean /** Event e: boolean */) {
@@ -67,12 +70,19 @@ export class BooksComponent implements OnInit {
     this.modal = true
   }
 
+  bookRanksResponse(response) {
+    if(response.status !== 200) {
+      return false
+    }
+    this.booksRank = response.data
+    console.log(this.booksRank)
+  }
+
   genresResponse(response) {
     if(response.status !== 200) {
       return false
     }
     this.genres = response.data
-    console.log(this.genres)
   }
 
   formatsReponse(response) {
@@ -163,7 +173,8 @@ export class BooksComponent implements OnInit {
     if(response.status !== 200) {
       return false
     }
-    console.log(response)
+
+    this.books.push(response.data)
   }
 
   getBunchOfBooks() {

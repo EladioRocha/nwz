@@ -26,11 +26,6 @@ export interface Language extends DataNameResponse {}
 
 export interface Author extends DataNameResponse {}
 
-export interface User {
-    _id: string,
-    username: string
-}
-
 export interface BooksBunch {
     _id: string,
     title: string,
@@ -47,7 +42,8 @@ export interface Book {
     number_pages: number,
     summary: string,
     borrowed: boolean,
-    rank: number
+    rank: number,
+    filename: string
     format_id: Format[],
     genre_id: Genre,
     language_id: Language,
@@ -76,9 +72,31 @@ export interface BookResponse extends NWZ {
 }
 
 export interface User {
+    _id: string,
     firstname: string,
     lastname: string,
     username: string,
     email: string,
-    token: string
+    filename: string,
+    token: string,
+    picture: string
+}
+
+export interface BookURLResponse extends NWZ {
+    data: string
+}
+
+export interface BookRankdId {
+    _id: string,
+    borrowed: boolean,
+    title: string,
+    filename: string
+}
+
+export interface BooksRank {
+    _id: BookRankdId
+}
+
+export interface BookRankResponse extends NWZ {
+    data: BooksRank[]
 }

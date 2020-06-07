@@ -5,7 +5,8 @@ import { User } from '../common/interfaces';
   providedIn: 'root'
 })
 export class UserService {
-  user: User
+  public API_URL_BASE: string = 'https://nwz-s3-files.s3-us-west-1.amazonaws.com/images/pictures'
+  public user: User
   constructor() { }
 
 }

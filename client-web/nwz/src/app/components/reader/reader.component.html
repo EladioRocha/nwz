@@ -5,7 +5,7 @@
         </div>
     </div>
     <div class="w-full pdf-content">
-        <pdf-viewer (after-load-complete)="aftearLoadPdf($event)" [(page)]="currentPage" [src]="pdfSrc" [render-text]="true" [show-all]="false" style="display: block;"></pdf-viewer>
+        <pdf-viewer (after-load-complete)="aftearLoadPdf($event)" [(page)]="currentPage" [src]="bookURL" [render-text]="true" [show-all]="false" style="display: block;"></pdf-viewer>
     </div>
     <div class="w-full arrow-right flex justify-center">
         <div class="mt-64 w-16 h-16 rounded-full flex justify-center cursor-pointer bg-red-400" (click)="nextPage()">

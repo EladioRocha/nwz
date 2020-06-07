@@ -19,7 +19,7 @@ export class BookSingleComponent implements OnInit {
   public days: number[]
   public requestDigital: boolean
 
-  constructor(private _route: ActivatedRoute, private _api: ApiService, private bookSingle: BookSingleService) {
+  constructor(private _route: ActivatedRoute, private _api: ApiService, public bookSingle: BookSingleService) {
     this.days = [1, 2, 3, 4, 5, 6, 7]
     library.add(fas, far, fab)
   }
@@ -35,6 +35,8 @@ export class BookSingleComponent implements OnInit {
     this.book = response.data
     this.bookSingle.book = this.book._id
     this.bookSingle.rank = this.book.rank
+    console.log(response.data)
+    this.bookSingle.picture = `${this.bookSingle.API_URL_BASE}/${this.book.filename}.png`
   }
 
   updateRank(qualification: number) {

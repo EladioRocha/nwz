@@ -105,3 +105,5 @@ dist
 
 #Temp files server
 server/src/temp/
+server/src/services/test/
+server/src/models/Test.js

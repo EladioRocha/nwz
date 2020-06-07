@@ -1,16 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { ApiService } from 'src/app/services/api.service';
 import { CookieService } from 'ngx-cookie-service';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { fab } from '@fortawesome/free-brands-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
   public modal: boolean
   public showLoginForm: boolean
+  public userPicture: string
 
   constructor(
     public _user: UserService,
@@ -19,6 +24,22 @@ export class NavbarComponent {
   ) {
     this.modal = false
     this.showLoginForm = true
+    library.add(fas, far, fab)
+  }
+
+  ngOnInit(): void {
+    const token = this._cookieService.get('token')
+    if(token) {
+      this._api.getDataUser().subscribe(response => this.handleValidSession(response))
+    }
+  }
+
+  handleValidSession(response) {
+    if(response.status === 200) {
+      this._user.user = response.data
+      this.userPicture = `${this._user.API_URL_BASE}/${this._user.user.filename}.png`
+      console.log(response)
+    }
   }
 
   showModal() {
@@ -38,8 +59,10 @@ export class NavbarComponent {
 
   loginResponse(response) {
     this._user.user = response.data
+    this.userPicture = `${this._user.API_URL_BASE}/${this._user.user.filename}.png`
     this._cookieService.set('token', this._user.user.token)
     this.modal = false
+    console.log(response)
   }
 
   register() {
