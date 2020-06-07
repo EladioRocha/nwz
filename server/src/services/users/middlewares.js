@@ -62,11 +62,10 @@ function isFree(req, res, next) {
 }
 
 function isValidDays(req, res, next) {
-    const { days } = req.body.days
+    const { days } = req.body
     if(days < 1 || days > 7) {
         return handleResponse.response(res, 400, null, 'Los días ingresados no son validos, ingrese un valor valido.')
     }
-    
     res.locals.data.days = days
 
     next()

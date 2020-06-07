@@ -4,12 +4,10 @@ const path = require('path'),
     middlewareAuth = require(path.join(__dirname, '..', 'authentication', 'middlewares')),
     middleware = require(path.join(__dirname, 'middlewares'));
     
-// router.get('/', controller.getAllGenres)
-
-router.post('/record', [middlewareAuth.validToken, middleware.validBook, middleware.borrowedBook], controller.createRecord)
+router.post('/record', [middlewareAuth.validToken, middleware.validBook, middleware.isValidDays, middleware.borrowedBook], controller.createRecord)
 router.post('/report', [middlewareAuth.validToken, middleware.validBook, middleware.validReport], controller.createReport)
 router.post('/chat', [middlewareAuth.validToken, middleware.validBook, middleware.isDifferentUser], controller.beginChat)
 
-router.put('/record', [middlewareAuth.validToken, middleware.validBook, middleware.isValidDays, middleware.isFree], controller.breakFreeBook)
+router.put('/record', [middlewareAuth.validToken, middleware.validBook, middleware.isFree], controller.breakFreeBook)
 
 module.exports = router

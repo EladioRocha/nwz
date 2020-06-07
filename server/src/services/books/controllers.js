@@ -1,6 +1,7 @@
 const path = require('path'),
     mongoose = require('mongoose'),
     fs = require('fs'),
+    moment = require('moment-timezone'),
     AWS = require('aws-sdk'),
     Book = require(path.join(__dirname, '..', '..', 'models', 'Books')),
     handleResponse = require(path.join(__dirname, '..', '..', 'helpers', 'handleResponse'));
@@ -13,7 +14,7 @@ async function getBooks(req, res) {
             options = {
                 offset,
                 limit: process.env.BOOKS_PER_PAGE,
-                select: 'title genre_id format_id borrowed picture',
+                select: 'title genre_id format_id borrowed filename',
                 populate: {
                     path: 'genre_id format_id', 
                     select: '_id name'
@@ -28,7 +29,7 @@ async function getBooks(req, res) {
         }
         
         const book = data.docs;
-        book.push({totalPages: data.totalPages, page: data.page })
+        book.push({totalPages: data.totalPages, page: data.page})
         console.log(book)
         return handleResponse.response(res, 200, book)
     } catch (error) {
@@ -86,6 +87,7 @@ async function getBook(req, res) {
                 'number_pages': 1,
                 'summary': 1,
                 'borrowed': 1,
+                'filename': 1,
                 'author_id._id': 1,
                 'author_id.name': 1,
                 'format_id._id': 1,
@@ -99,6 +101,7 @@ async function getBook(req, res) {
                 'rank': {$trunc: ['$rank', 0]}
             }}
         ])
+
         return handleResponse.response(res, 200, book[0])
     } catch (error) {
         console.log(error)
@@ -108,7 +111,16 @@ async function getBook(req, res) {
 
 async function saveBook(req, res, next) {
     try {
-        await Book.create(res.locals.data)
+        const saved = await Book.create(res.locals.data),
+            book = await saved.populate('format_id genre_id', 'name').execPopulate();
+            
+        res.locals.data = {
+            title: book.title,
+            genre_id: book.genre_id,
+            format_id: book.format_id,
+            borrowed: book.borrowed,
+            filename: book.filename
+        }
         next()
     } catch (error) {
         console.log(error)
@@ -127,21 +139,28 @@ async function uploadFilesToAWS(req ,res) {
                     'images/covers'
                 ], 
                 body: [
-                    fs.readFileSync(res.locals.book.pdf), 
-                    fs.readFileSync(res.locals.book.img)
-                ]};
-                
+                    res.locals.book.pdf, 
+                    res.locals.book.img
+                ]
+            },
+            extensions = ['pdf', 'png'],
+            contentType = ['application/pdf', 'image/png'];
+
         for(let [idx, key] of Object.keys(data).entries()) {
             promises.push(uploadFile(s3, {
                 Bucket: process.env.BUCKET_NAME,
-                Key: `${data.key[idx]}/${filename}`,
-                Body: `${data.body[idx]}/${filename}`
+                Key: `${data.key[idx]}/${filename}.${extensions[idx]}`,
+                Body: fs.readFileSync(data.body[idx]),
+                ContentType : contentType[idx]
             }))
         }
 
         await Promise.all(promises)
-            
-        return handleResponse.response(res, 200, null, 'El libro se ha guardado correctamente.')
+
+        data.body.push(res.locals.book.pdfCover)
+        deleteFiles(data.body)
+        
+        return handleResponse.response(res, 200, res.locals.data, 'El libro se ha guardado correctamente.')
     } catch (error) {
         console.log(error)
         return handleResponse.response(res, 500, null)
@@ -155,7 +174,7 @@ function uploadFile(s3, params) {
                 console.log(err)
                 reject(true)
             }
-            resolve(true)
+            resolve(data)
         });
     })
 }
@@ -185,10 +204,91 @@ async function updateRankBook(req, res) {
     }
 }
 
+function deleteFiles(files) {
+    for(let file of files) {
+        try {
+            fs.unlinkSync(file)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+}
+
+async function getUrlBook(req, res) {
+    try {
+        const data = await Book.findOne({
+            _id: res.locals.data.book
+        }).select('filename')
+
+        const response = `${process.env.API_URL_PDF_BASE}/${data.filename}.pdf`
+        return handleResponse.response(res, 200, response, 'Disfruta de la lectura')
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null) 
+    }
+}
+
+async function getRank(req, res) {
+    try {
+        const data = await Record.aggregate(
+            [
+                {
+                    $match: {
+                        start_date: {
+                            $gte: new Date(moment.tz('America/Mexico_City').startOf('week').format()),
+                            $lte: new Date(moment.tz('America/Mexico_City').endOf('week').format())
+                        }
+                    },
+                },
+                {
+                    $lookup: {
+                        from: 'books',
+                        localField: 'book_id',
+                        foreignField: '_id',
+                        as: 'book_id'
+                    }
+                },
+                {
+                    $unwind: '$book_id'
+                },
+                {
+                    $group: {
+                        _id: "$book_id", 
+                        count: { 
+                            $sum: 1
+                        }
+                    } 
+                },
+                {
+                    $sort: {count: -1}
+                },
+                {
+                    $limit: 5
+                },
+                {
+                    $project: {
+                        '_id._id': 1,
+                        '_id.title': 1,
+                        '_id.borrowed': 1,
+                        '_id.filename': 1
+                    }
+                },
+            ])
+
+        return handleResponse.response(res, 200, data, 'Estos son los libros más populares de la semana')
+        
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
 module.exports = {
     getBooks,
     getBook,
     saveBook,
     updateRankBook,
-    uploadFilesToAWS
+    uploadFilesToAWS,
+    getUrlBook,
+    getRank
 }

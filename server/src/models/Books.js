@@ -13,7 +13,7 @@ const BookSchema = new mongoose.Schema({
     summary: {type: String, required: true, minlength: 10, maxlength: 1000},
     borrowed: {type: Boolean, required: true, default: false},
     read: {type: Number, required: true, default: 0},
-    key: {type: String, required: true},
+    filename: {type: String, required: true},
     rank: [{
         user_id: {type: mongoose.Types.ObjectId, required: true, ref: 'User'},
         qualification: {type: Number, required: true, min: 1, max: 5},

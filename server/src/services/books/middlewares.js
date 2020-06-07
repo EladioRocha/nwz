@@ -2,16 +2,16 @@ const path = require('path'),
     validator = require('validator'),
     mongoose = require('mongoose'),
     fs = require('fs'),
-    moment = require('moment'),
+    moment = require('moment-timezone'),
     pdf2png = require('pdf2png-mp'),
     hummus = require('hummus'),
     streams = require('memory-streams'),
-    pdfjsLib = require('pdfjs-dist'),
     PDFRStreamForBuffer = require(path.join(__dirname, '..', '..', 'helpers', 'PDFRStreamForBuffer'))
     Genre = require(path.join(__dirname, '..', '..', 'models', 'Genres')),
     Language = require(path.join(__dirname, '..', '..', 'models', 'Languages')),
     Format = require(path.join(__dirname, '..', '..', 'models', 'Formats')),
     Author = require(path.join(__dirname, '..', '..', 'models', 'Authors')),
+    Record = require(path.join(__dirname, '..', '..', 'models', 'Records')),
     handleResponse = require(path.join(__dirname, '..', '..', 'helpers', 'handleResponse'));
 
 async function validDataBook(req, res, next) {
@@ -86,6 +86,29 @@ async function validDataBook(req, res, next) {
     }
 }
 
+async function userHasBook(req, res, next) {
+    try {
+        const borrowerId = mongoose.Types.ObjectId(res.locals.data._id),
+            bookId = mongoose.Types.ObjectId(req.params.id),
+            currentDate = moment.tz('America/Mexico_City').format();
+
+        const data = await Record.findOne({
+            borrower_id: borrowerId, 
+            book_id: bookId,
+            end_date: {$gt: currentDate}
+        }).select('_id')
+        if(!data) {
+            return handleResponse.response(res, 400, null, 'El libro no te pertenece solicita el libro para poder leerlo.')
+        }
+
+        res.locals.data.book = bookId
+        next()
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
 function isValidFormat(formats, formatsDB) {
     let validFormat = false,
         data = [];
@@ -139,10 +162,11 @@ async function isValidPdf(req, res, next) {
             let firstPageBuffer = getFirstPagePDF(fs.readFileSync(pathPDF));
             fs.writeFileSync(pathCoverPDF, firstPageBuffer);
             const pathImg = await getImageFromPDF(filename, pathCoverPDF)
-            res.locals.data.key = filename
+            res.locals.data.filename = filename
             res.locals.book = {
                 pdf: pathPDF,
                 img: pathImg,
+                pdfCover: pathCoverPDF,
                 filename
             }
             next()
@@ -226,5 +250,6 @@ function getFirstPagePDF (buffer) {
 module.exports = {
     validDataBook,
     validQualificationBook,
-    isValidPdf
+    isValidPdf,
+    userHasBook
 }

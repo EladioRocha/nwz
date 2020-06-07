@@ -97,5 +97,5 @@ module.exports = {
     createRecord,
     breakFreeBook,
     createReport,
-    beginChat
+    beginChat,
 }

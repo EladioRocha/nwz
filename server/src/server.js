@@ -16,5 +16,6 @@ app.use('/api/v1/genres', require(path.join(__dirname, 'services', 'genres', 'ro
 app.use('/api/v1/formats', require(path.join(__dirname, 'services', 'formats', 'routes')))
 app.use('/api/v1/languages', require(path.join(__dirname, 'services', 'languages', 'routes')))
 app.use('/api/v1/users', require(path.join(__dirname, 'services', 'users', 'routes')))
+app.use('/api/v1/test', require(path.join(__dirname, 'services', 'test', 'routes')))
 
 module.exports = app
