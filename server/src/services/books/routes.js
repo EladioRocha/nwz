@@ -7,7 +7,7 @@ const path = require('path'),
 router.get('/', controller.getBooks)
 router.get('/:_id', controller.getBook)
 
-router.post('/', [middlewareAuth.validToken, middleware.validDataBook], controller.saveBook)
+router.post('/', [middlewareAuth.validToken, middleware.validDataBook, middleware.isValidPdf], [controller.saveBook, controller.uploadFilesToAWS])
 
 router.put('/rank', [middlewareAuth.validToken, middleware.validQualificationBook], controller.updateRankBook)
 

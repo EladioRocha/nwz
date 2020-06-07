@@ -1,5 +1,7 @@
 const path = require('path'),
     mongoose = require('mongoose'),
+    fs = require('fs'),
+    AWS = require('aws-sdk'),
     Book = require(path.join(__dirname, '..', '..', 'models', 'Books')),
     handleResponse = require(path.join(__dirname, '..', '..', 'helpers', 'handleResponse'));
 
@@ -104,14 +106,58 @@ async function getBook(req, res) {
     }
 }
 
-async function saveBook(req, res) {
+async function saveBook(req, res, next) {
     try {
         await Book.create(res.locals.data)
+        next()
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+async function uploadFilesToAWS(req ,res) {
+    try {
+        const s3 = new AWS.S3({accessKeyId: process.env.ACCESS_KEY_ID, secretAccessKey: process.env.SECRET_ACCESS_KEY}),
+            promises = [],
+            { filename } = res.locals.book
+            data = {
+                key: [
+                    'books/pdf',
+                    'images/covers'
+                ], 
+                body: [
+                    fs.readFileSync(res.locals.book.pdf), 
+                    fs.readFileSync(res.locals.book.img)
+                ]};
+                
+        for(let [idx, key] of Object.keys(data).entries()) {
+            promises.push(uploadFile(s3, {
+                Bucket: process.env.BUCKET_NAME,
+                Key: `${data.key[idx]}/${filename}`,
+                Body: `${data.body[idx]}/${filename}`
+            }))
+        }
+
+        await Promise.all(promises)
+            
         return handleResponse.response(res, 200, null, 'El libro se ha guardado correctamente.')
     } catch (error) {
         console.log(error)
         return handleResponse.response(res, 500, null)
     }
+}
+
+function uploadFile(s3, params) {
+    return new Promise((resolve, reject) => {
+        s3.upload(params, function(err, data) {
+            if (err) {
+                console.log(err)
+                reject(true)
+            }
+            resolve(true)
+        });
+    })
 }
 
 async function updateRankBook(req, res) {
@@ -143,5 +189,6 @@ module.exports = {
     getBooks,
     getBook,
     saveBook,
-    updateRankBook
+    updateRankBook,
+    uploadFilesToAWS
 }

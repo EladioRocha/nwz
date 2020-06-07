@@ -40,7 +40,7 @@ export class ApiService {
 
 
   /** ==================== BOOKS ==================== **/
-  uploadBook(title: string, author: string, isbn: string, numPages: string, summary: string, genre: string, format: string[], language: string): Observable<DataNullResponse> {
+  uploadBook(title: string, author: string, isbn: string, numPages: unknown, summary: string, genre: string, format: string[], language: string, book: unknown): Observable<DataNullResponse> {
     return this._http.post<DataNullResponse>(`${this.API_URL}/books`, {
       title,
       author,
@@ -49,7 +49,8 @@ export class ApiService {
       summary,
       genre,
       format,
-      language
+      language,
+      book
     }, this.setHeaders())
   }
 

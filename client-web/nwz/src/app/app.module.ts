@@ -27,6 +27,7 @@ import { BookRankPipe } from './pipes/book-rank.pipe';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BookBorrowedPipe } from './pipes/book-borrowed.pipe';
 import { PaginationPipe } from './pipes/pagination.pipe';
+import { ReaderComponent } from './components/reader/reader.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { PaginationPipe } from './pipes/pagination.pipe';
     BookRankPipe,
     BookBorrowedPipe,
     PaginationPipe,
+    ReaderComponent,
     // UsersChatComponent,
     // ProfileReportsComponent,
     // ProfileBooksComponent

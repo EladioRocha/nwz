@@ -1,0 +1,15 @@
+<section class="py-2 px-4 flex">
+    <div class="w-full arrow-left flex justify-center">
+        <div class="mt-64 w-16 h-16 rounded-full flex justify-center cursor-pointer bg-red-400" (click)="previousPage()">
+            <p class="my-auto"><fa-icon [classes]="['text-orange-100']" [icon]="['fas', 'arrow-left']" size="lg"></fa-icon></p>
+        </div>
+    </div>
+    <div class="w-full pdf-content">
+        <pdf-viewer (after-load-complete)="aftearLoadPdf($event)" [(page)]="currentPage" [src]="pdfSrc" [render-text]="true" [show-all]="false" style="display: block;"></pdf-viewer>
+    </div>
+    <div class="w-full arrow-right flex justify-center">
+        <div class="mt-64 w-16 h-16 rounded-full flex justify-center cursor-pointer bg-red-400" (click)="nextPage()">
+            <p class="my-auto"><fa-icon [classes]="['text-orange-100']" [icon]="['fas', 'arrow-right']" size="lg"></fa-icon></p>
+        </div>
+    </div>
+</section>

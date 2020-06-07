@@ -7,6 +7,7 @@ import { BookSingleComponent } from './components/book-single/book-single.compon
 import { ProfileBooksComponent } from './components/profile-books/profile-books.component';
 import { ProfileReportsComponent } from './components/profile-reports/profile-reports.component';
 import { UsersChatComponent } from './components/users-chat/users-chat.component';
+import { ReaderComponent } from './components/reader/reader.component';
 
 
 const routes: Routes = [
@@ -17,7 +18,8 @@ const routes: Routes = [
   {path: 'perfil/historial', component: ProfileHistoryComponent, pathMatch: 'full'},
   {path: 'perfil/libros', component: ProfileBooksComponent, pathMatch: 'full'},
   {path: 'perfil/reportes', component: ProfileReportsComponent, pathMatch: 'full'},
-  {path: 'usuarios/chat', component: UsersChatComponent, pathMatch: 'full'}
+  {path: 'usuarios/chat', component: UsersChatComponent, pathMatch: 'full'},
+  {path: 'libros/lectura/:id', component: ReaderComponent}
 ];
 
 @NgModule({

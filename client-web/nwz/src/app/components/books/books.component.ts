@@ -24,7 +24,6 @@ export class BooksComponent implements OnInit {
   public currentGenre: string
   public existBooks: boolean
 
-  // pdfSrc = "https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf";
   @ViewChild('app-pagination') pagination
 
   constructor(private _api: ApiService, private _route: ActivatedRoute) { 
@@ -90,17 +89,74 @@ export class BooksComponent implements OnInit {
     this.languages = response.data
   }
 
-  uploadBook() {
-    const title: string = (document.querySelector('#book-title') as HTMLInputElement).value,
-      author: string = (document.querySelector('#book-author') as HTMLInputElement).value,
-      isbn: string = (document.querySelector('#book-isbn') as HTMLInputElement).value,
-      numPages: string = (document.querySelector('#book-number-pages') as HTMLInputElement).value,
-      summary: string = (document.querySelector('#book-summary') as HTMLInputElement).value,
-      genre: string = (document.querySelector('#book-genre') as HTMLInputElement).value,
-      format: string = (document.querySelector('#book-format') as HTMLInputElement).value,
-      language: string = (document.querySelector('#book-language') as HTMLInputElement).value;
-                                                                                                        // PDF ID                 // FÍSICO ID
-    this._api.uploadBook(title, author, isbn, numPages, summary, genre, [...(format === 'Ambos') ? '5ecec9791ba037668c2fc64c,5ecec9791ba037668c2fc64e'.split(',') : [format]], language).subscribe(response => this.uploadBookResponse(response))
+  async uploadBook() {
+    try {
+      const title: string = (document.querySelector('#book-title') as HTMLInputElement).value,
+        author: string = (document.querySelector('#book-author') as HTMLInputElement).value,
+        isbn: string = (document.querySelector('#book-isbn') as HTMLInputElement).value,
+        summary: string = (document.querySelector('#book-summary') as HTMLInputElement).value,
+        genre: string = (document.querySelector('#book-genre') as HTMLInputElement).value,
+        format: string = (document.querySelector('#book-format') as HTMLInputElement).value,
+        language: string = (document.querySelector('#book-language') as HTMLInputElement).value,
+        file = (document.querySelector('#book-file') as HTMLInputElement).files[0],
+        data: unknown = await Promise.all([this.getBase64Book(file), this.getNumberPages(file)]),
+        book: unknown = data[0],
+        numPages: unknown = data[1];
+
+        this._api.uploadBook(title, author, isbn, numPages, summary, genre, [...(format === 'Ambos') ? '5ecec9791ba037668c2fc64c,5ecec9791ba037668c2fc64e'.split(',') : [format]], language, book).subscribe(response => this.uploadBookResponse(response))
+    } catch (error) {
+      if(error === 'Parece que se ta ha olvidado subir un libro...') {
+        console.log(error)
+      }
+    }
+                                                                                         // PDF ID                 // FÍSICO ID
+  }
+
+  getBase64Book(file): unknown {
+    return new Promise((resolve, reject) => {
+      try {
+        console.log(file)
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = () => {
+          resolve(reader.result)
+        }
+      } catch (error) {
+        console.log(error)
+        reject('Parece que se ta ha olvidado subir un libro...')
+      }
+    })
+  }
+
+  getNumberPages(file): unknown {
+    return new Promise((resolve, reject) => {
+      try {
+        const reader = new FileReader()
+        reader.readAsBinaryString(file)
+        reader.onload = () => {
+          try {
+            resolve(reader.result.toString().match(/\/Type[\s]*\/Page[^s]/g).length)
+          } catch (error) {
+            console.log(error)
+            reject('Parece que se ta ha olvidado subir un libro...')
+          }
+        }
+      } catch (error) {
+        console.log(error)
+        reject('Parece que se ta ha olvidado subir un libro...')
+      }
+    })
+  }
+
+  getDataFromFile(action) {
+    return new Promise((resolve, reject) => {
+      try {
+        
+      } catch (error) {
+        console.log(error)
+        reject('Parece que algo ha salido mal...')
+      }
+    }) 
   }
 
   uploadBookResponse(response) {

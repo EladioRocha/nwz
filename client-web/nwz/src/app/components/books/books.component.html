@@ -27,44 +27,35 @@
   </button>
 </section>
 <app-modal [visible]="modal" (hide)="hideModal($event)">
-  <div class="header">
-    Sube un libro
-  </div>
   <div class="content py-2 px-4">
     <div class="w-full">
       <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-title" >
-        Título
+        Título *
       </label>
-      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica" id="book-title">
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica" id="book-title">
     </div>
 
     <div class="w-full">
       <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-author" >
-        Autor
+        Autor *
       </label>
-      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica" id="book-author">
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica" id="book-author">
     </div>
     <div class="w-full">
       <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-isbn" >
         ISBN
       </label>
-      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica" id="book-isbn">
-    </div>
-    <div class="w-full">
-      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-number-pages" >
-        Número de páginas.
-      </label>
-      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica" id="book-number-pages">
+      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica" id="book-isbn">
     </div>
     <div class="w-full">
       <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-summary" >
-        Resumen.
+        Resumen *
       </label>
-      <textarea class="resize-none appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica es un tema apasionante debido a todo lo que involucra..." id="book-summary"></textarea>
+      <textarea class="resize-none appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica es un tema apasionante debido a todo lo que involucra..." id="book-summary" rows="5"></textarea>
     </div>
     <div class="w-full">
       <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-genre" >
-        Género
+        Género *
       </label>
       <select
       class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
@@ -75,7 +66,7 @@
     <div class="w-full flex">
       <div class="w-1/2 mr-2">
         <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-format" >
-          Formato
+          Formato *
         </label>
         <select
         class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
@@ -86,7 +77,7 @@
           </div>
       <div class="w-1/2">
         <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-language" >
-          Idioma
+          Idioma *
         </label>
         <select
         class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
@@ -94,6 +85,15 @@
         <option value="{{language._id}}" *ngFor="let language of languages">{{language.name}}</option>
       </select>
       </div>
+    </div>
+    <div class="flex w-full items-center justify-center bg-grey-lighter mt-2">
+      <label class="w-full flex flex-col items-center px-4 py-2 bg-gray-100 text-blue rounded-lg tracking-wide cursor-pointer hover:bg-blue hover:text-grbg-gray-100">
+        <svg class="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+        </svg>
+        <span class="mt-2 text-xs text-gray-700 text-center">Selecciona el libro</span>
+        <input type='file' class="hidden" id="book-file">
+    </label>
     </div>
   </div>
   <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="uploadBook()">Publicar</button>
