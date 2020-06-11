@@ -4,7 +4,8 @@ import { far } from '@fortawesome/free-regular-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { ApiService } from 'src/app/services/api.service';
-import { ActivatedRoute } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-reader',
@@ -13,29 +14,36 @@ import { ActivatedRoute } from "@angular/router";
 })
 
 export class ReaderComponent implements OnInit {
-  // public pdfSrc = "https://nwz-s3-files.s3-us-west-1.amazonaws.com/books/pdf/Arduino+Curso+Pr%C3%A1ctico+de+formaci%C3%B3n+(+PDFDrive.com+).pdf";
   public currentPage: number
   public totalPages: number
   public bookURL: string
-  constructor(private _api: ApiService, private _route: ActivatedRoute) {
+  private book: string
+  constructor(private _api: ApiService, private _route: ActivatedRoute, private _router: Router, private _toastr: ToastrService) {
     library.add(fas, far, fab)
   }
 
   ngOnInit(): void {
+    this.book = this._route.snapshot.paramMap.get('id')
     this.getBookToRead()
     this.currentPage = 1
   }
 
   getBookToRead() {
-    this._api.getBookToRead(this._route.snapshot.paramMap.get('id')).subscribe(response => this.getBookToReadResponse(response)) 
+    this._api.getBookToRead(this.book).subscribe(response => this.getBookToReadResponse(response)) 
   }
 
   getBookToReadResponse(response) {
-    if(response.status !== 200) {
-      return false
+    console.log(response)
+    const status = response.status
+    if(status === 200) {
+      this.bookURL = response.data
+    } else if (status === 400) {
+      this._router.navigate(['/libros'])
+      this._toastr.warning(response.message, 'Acceso denegado.')
+    }else {
+      this._toastr.error(response.message, 'Algo ha salido mal.')
     }
     
-    this.bookURL = response.data
   }
 
   aftearLoadPdf(pdf): void {
@@ -51,6 +59,22 @@ export class ReaderComponent implements OnInit {
   nextPage(): void {
     if(this.currentPage < this.totalPages) {
       this.currentPage++
+    }
+  }
+
+  returnBook() {
+    this._api.returnBook(this.book).subscribe(response => this.returnBookResponse(response))
+  }
+
+  returnBookResponse(response) {
+    const status = response.status
+    if(status === 200) {
+      this._toastr.success(response.message)
+      this._router.navigate(['/libros'])
+    } else if (status === 400) {
+      this._toastr.warning(response.message)
+    }else {
+      this._toastr.error(response.message, 'Algo ha salido mal.')
     }
   }
 }

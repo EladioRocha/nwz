@@ -5,78 +5,26 @@
       <app-profile-sidenav class="w-1/4 px-4"></app-profile-sidenav>
       <div class="history-data w-3/4 h-64 flex flex-wrap">
         <h2 class="w-full text-3xl font-semibold text-gray-700">Historial</h2>
-        <div class="w-1/2 pr-4">
-          <select
-            class="bg-gray-100 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-            id="status">
-            <option>Solicitados</option>
-            <option>Prestados</option>
-          </select>
-        </div>
         <div class="w-full table-books">
           <table class="table-auto text-gray-700">
             <thead>
               <tr>
-                <th class="px-4 py-2">Título</th>
-                <th class="px-4 py-2">Categoría</th>
+                <th class="px-4 py-2">Libro</th>
                 <th class="px-4 py-2">Fecha de inicio</th>
                 <th class="px-4 py-2">Fecha final</th>
-                <th class="px-4 py-2">Prestador</th>
+                <th class="px-4 py-2">Prestamista</th>
+                <th class="px-4 py-2">Solicitó</th>
                 <th class="px-4 py-2">Tipo</th>
-                <th class="px-4 py-2">Estado</th>
-                <th class="px-4 py-2">Opciones</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td class="px-4 py-2">Lorem ipsum dolot.</td>
-                <td class="px-4 py-2">Categorini</td>
-                <td class="px-4 py-2">01/03/2020</td>
-                <td class="px-4 py-2">01/06/2020</td>
-                <td class="px-4 py-2">usuario2342</td>
-                <td class="px-4 py-2">Digital</td>
-                <td class="px-4 py-2">Devuelto</td>
-                <td class="px-4 py-2">&#9868;</td>
-              </tr>
-              <tr>
-                <td class="px-4 py-2">Lorem ipsum dolot.</td>
-                <td class="px-4 py-2">Categorini</td>
-                <td class="px-4 py-2">01/03/2020</td>
-                <td class="px-4 py-2">01/06/2020</td>
-                <td class="px-4 py-2">usuario2342</td>
-                <td class="px-4 py-2">Digital</td>
-                <td class="px-4 py-2">Devuelto</td>
-                <td class="px-4 py-2">&#9868;</td>
-              </tr>
-              <tr>
-                <td class="px-4 py-2">Lorem ipsum dolot.</td>
-                <td class="px-4 py-2">Categorini</td>
-                <td class="px-4 py-2">01/03/2020</td>
-                <td class="px-4 py-2">01/06/2020</td>
-                <td class="px-4 py-2">usuario2342</td>
-                <td class="px-4 py-2">Digital</td>
-                <td class="px-4 py-2">Devuelto</td>
-                <td class="px-4 py-2">&#9868;</td>
-              </tr>
-              <tr>
-                <td class="px-4 py-2">Lorem ipsum dolot.</td>
-                <td class="px-4 py-2">Categorini</td>
-                <td class="px-4 py-2">01/03/2020</td>
-                <td class="px-4 py-2">01/06/2020</td>
-                <td class="px-4 py-2">usuario2342</td>
-                <td class="px-4 py-2">Digital</td>
-                <td class="px-4 py-2">Devuelto</td>
-                <td class="px-4 py-2">&#9868;</td>
-              </tr>
-              <tr>
-                <td class="px-4 py-2">Lorem ipsum dolot.</td>
-                <td class="px-4 py-2">Categorini</td>
-                <td class="px-4 py-2">01/03/2020</td>
-                <td class="px-4 py-2">01/06/2020</td>
-                <td class="px-4 py-2">usuario2342</td>
-                <td class="px-4 py-2">Digital</td>
-                <td class="px-4 py-2">Devuelto</td>
-                <td class="px-4 py-2">&#9868;</td>
+              <tr *ngFor="let req of requested">
+                <td class="px-4 py-2 cursor-pointer" [routerLink]="['/libros', req?.book_id._id]">{{ req?.book_id.title }}</td>
+                <td class="px-4 py-2">{{ req?.start_date | date: 'dd/MM/yyyy' }}</td>
+                <td class="px-4 py-2">{{ req?.end_date | date: 'dd/MM/yyyy' }}</td>
+                <td class="px-4 py-2">{{ req?.lender_id.username }}</td>
+                <td class="px-4 py-2">{{ req?.borrower_id.username }}</td>
+                <td class="px-4 py-2">{{ req?.book_id.format_id | bookFormat }}</td>
               </tr>
             </tbody>
           </table>

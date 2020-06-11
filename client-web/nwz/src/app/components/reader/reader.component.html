@@ -6,6 +6,7 @@
     </div>
     <div class="w-full pdf-content">
         <pdf-viewer (after-load-complete)="aftearLoadPdf($event)" [(page)]="currentPage" [src]="bookURL" [render-text]="true" [show-all]="false" style="display: block;"></pdf-viewer>
+        <button (click)="returnBook()" class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none">Devolver</button>
     </div>
     <div class="w-full arrow-right flex justify-center">
         <div class="mt-64 w-16 h-16 rounded-full flex justify-center cursor-pointer bg-red-400" (click)="nextPage()">

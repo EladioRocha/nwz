@@ -13,11 +13,11 @@
       </div>
       <div class="w-full books flex flex-wrap">
         <div class="w-full recent-books flex flex-wrap">
-          <app-book-card class="w-1/4 px-4 mb-2" *ngFor="let book of books" [_id]="book._id" [title]="book.title" [formats]="book.format_id" [borrowed]="book.borrowed" [genre]="book.genre_id.name" [filename]="book.filename"></app-book-card>
+          <app-book-card class="w-1/4 px-4 mb-2" *ngFor="let book of books.books" [_id]="book._id" [title]="book.title" [formats]="book.format_id" [borrowed]="book.borrowed" [genre]="book.genre_id.name" [filename]="book.filename"></app-book-card>
           <p class="py-2 px-4 text-3xl" *ngIf="existBooks">No se encontraron libros en esta categoría :( intentalo con otra.</p>
         </div>
         <div class="w-full pagination-books px-4 text-center">
-          <app-pagination [page]="page" [totalPages]="totalPages" (click)="getBunchOfBooks()"></app-pagination>
+          <app-pagination [page]="books.page" [totalPages]="books.totalPages" (click)="getBunchOfBooks()"></app-pagination>
         </div>
       </div>
     </div>
@@ -70,11 +70,11 @@
         </label>
         <select
         class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
-        id="book-format">
-          <option value="Ambos">Ambos</option>
+        id="book-format" (change)="typeOfFormat($event.target.value)">
           <option value="{{format._id}}" *ngFor="let format of formats">{{format.name}}</option>
+          <option value="Ambos">Ambos</option>
         </select>
-          </div>
+      </div>
       <div class="w-1/2">
         <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-language" >
           Idioma *
@@ -86,7 +86,7 @@
       </select>
       </div>
     </div>
-    <div class="flex w-full items-center justify-center bg-grey-lighter mt-2">
+    <div class="flex w-full items-center justify-center bg-grey-lighter mt-2" *ngIf="!uploadImage">
       <label class="w-full flex flex-col items-center px-4 py-2 bg-gray-100 text-blue rounded-lg tracking-wide cursor-pointer hover:bg-blue hover:text-grbg-gray-100">
         <svg class="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
             <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
@@ -95,7 +95,17 @@
         <input type='file' class="hidden" id="book-file">
     </label>
     </div>
+    <div class="flex w-full items-center justify-center bg-grey-lighter mt-2" *ngIf="uploadImage">
+      <label class="w-full flex flex-col items-center px-4 py-2 bg-gray-100 text-blue rounded-lg tracking-wide cursor-pointer hover:bg-blue hover:text-grbg-gray-100">
+        <svg class="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+        </svg>
+        <span class="mt-2 text-xs text-gray-700 text-center">Selecciona la imágen</span>
+        <input type='file' class="hidden" id="book-image">
+    </label>
+    </div>
   </div>
+  
   <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="uploadBook()">Publicar</button>
 </app-modal>
 <app-footer></app-footer>

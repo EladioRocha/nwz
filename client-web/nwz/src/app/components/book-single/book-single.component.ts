@@ -7,6 +7,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-book-single',
@@ -18,8 +19,10 @@ export class BookSingleComponent implements OnInit {
   public modal: boolean
   public days: number[]
   public requestDigital: boolean
+  public onlyPdf: boolean
+  public hasPdf: boolean = true
 
-  constructor(private _route: ActivatedRoute, private _api: ApiService, public bookSingle: BookSingleService) {
+  constructor(private _route: ActivatedRoute, private _api: ApiService, public bookSingle: BookSingleService, private _toastr: ToastrService) {
     this.days = [1, 2, 3, 4, 5, 6, 7]
     library.add(fas, far, fab)
   }
@@ -31,12 +34,14 @@ export class BookSingleComponent implements OnInit {
   bookResponse(response) {
     if(response.status !== 200) {
       return false
+    } else if(response.status === 200) {
+      this.book = response.data
+      this.onlyPdf = !this.book.format_id.findIndex(el => el.name === 'Físico')
+      this.hasPdf = this.book.format_id.findIndex(el => el.name === 'PDF') >= 0
+      this.bookSingle.book = this.book._id
+      this.bookSingle.rank = this.book.rank
+      this.bookSingle.picture = `${this.bookSingle.API_URL_BASE}/${this.book.filename}.png`
     }
-    this.book = response.data
-    this.bookSingle.book = this.book._id
-    this.bookSingle.rank = this.book.rank
-    console.log(response.data)
-    this.bookSingle.picture = `${this.bookSingle.API_URL_BASE}/${this.book.filename}.png`
   }
 
   updateRank(qualification: number) {
@@ -44,9 +49,10 @@ export class BookSingleComponent implements OnInit {
   }
 
   rankResponse(response) {
-    console.log(response)
     if(response.status !== 200) {
       return false
+    } else if (response.status === 200) {
+      this._toastr.success(response.message, 'Calificación guardada.')
     }
   }
   
@@ -63,8 +69,10 @@ export class BookSingleComponent implements OnInit {
     this.bookSingle.days = value
   }
 
-  requestBook() {
-    console.log(this.bookSingle.book)
+  requestBook(isEbook: boolean, text: string) {
+    if(isEbook) {
+      let button = document.querySelector('#request-ebook');
+    }
     this._api.requestBook(this.bookSingle.book, this.bookSingle.days).subscribe(response => this.requestBookResponse(response))
   }
 
@@ -72,6 +80,8 @@ export class BookSingleComponent implements OnInit {
     console.log(response)
     if(response.status !== 200) {
       return false
+    } else if(response.status === 200) {
+      this._toastr.success(response.message, 'Libro elegido')
     }
   }
 

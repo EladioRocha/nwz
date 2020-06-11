@@ -5,7 +5,9 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ToastrService } from 'ngx-toastr';
+import { BooksService } from 'src/app/services/books.service';
 
 @Component({
   selector: 'app-books',
@@ -17,30 +19,39 @@ export class BooksComponent implements OnInit {
   public genres: Genre[]
   public formats: Format[]
   public languages: Language[]
-  public books: BooksBunch[]
   public page: number
   public totalPages: number
   public currentPage: number
   public currentGenre: string
   public existBooks: boolean
   public booksRank: BooksRank
+  public uploadImage: boolean = true
 
   @ViewChild('app-pagination') pagination
 
-  constructor(private _api: ApiService, private _route: ActivatedRoute) { 
+  constructor(private _api: ApiService, private _route: ActivatedRoute, private _router: Router, private _toastr: ToastrService, public books: BooksService) { 
     this.modal = false
     library.add(fas, far, fab)
   }
 
   ngOnInit(): void {
-    this._route.queryParams.subscribe(values => { 
-      this.currentPage = values.pagina
-    })
-    this._api.handleMultipleGetRequest(this._api.getBunchOfBooks(this.currentPage), this._api.getAllGenres(), this._api.getRankBooks()).subscribe(response => {
-      this.booksResponse(response[0])
-      this.genresResponse(response[1])
-      this.bookRanksResponse(response[2])
-    })
+    if(this.books.fromSearch) {
+      console.log('============================= FROM SEARCH', this.books.fromSearch, this.books.term)
+      this._api.handleMultipleGetRequest(this._api.getAllGenres(), this._api.getRankBooks()).subscribe(response => {
+        this.genresResponse(response[0])
+        this.bookRanksResponse(response[1])
+        this.books.fromSearch = false
+      })
+    } else {
+      this._route.queryParams.subscribe(values => { 
+        this.currentPage = values.pagina
+      })
+      this._api.handleMultipleGetRequest(this._api.getBunchOfBooks(this.currentPage), this._api.getAllGenres(), this._api.getRankBooks()).subscribe(response => {
+        this.booksResponse(response[0])
+        this.genresResponse(response[1])
+        this.bookRanksResponse(response[2])
+      })
+    }
   }
 
   booksResponse(response) {
@@ -48,11 +59,11 @@ export class BooksComponent implements OnInit {
       return false
     }
     
-    const paginaiton = response.data.pop()
-    this.page = paginaiton.page
-    this.totalPages = paginaiton.totalPages
-    this.books = response.data
-    this.existBooks = Object.values(this.books).length === 0
+    this.books.pagination = response.data.pop()
+    this.books.page = this.books.pagination.page
+    this.books.totalPages = this.books.pagination.totalPages
+    this.books.books = response.data
+    this.existBooks = Object.values(this.books.books).length === 0
 
   }
 
@@ -71,6 +82,7 @@ export class BooksComponent implements OnInit {
   }
 
   bookRanksResponse(response) {
+    console.log(response)
     if(response.status !== 200) {
       return false
     }
@@ -119,7 +131,6 @@ export class BooksComponent implements OnInit {
         console.log(error)
       }
     }
-                                                                                         // PDF ID                 // FÍSICO ID
   }
 
   getBase64Book(file): unknown {
@@ -145,6 +156,7 @@ export class BooksComponent implements OnInit {
         reader.readAsBinaryString(file)
         reader.onload = () => {
           try {
+            console.log(reader.result.toString())
             resolve(reader.result.toString().match(/\/Type[\s]*\/Page[^s]/g).length)
           } catch (error) {
             console.log(error)
@@ -158,23 +170,16 @@ export class BooksComponent implements OnInit {
     })
   }
 
-  getDataFromFile(action) {
-    return new Promise((resolve, reject) => {
-      try {
-        
-      } catch (error) {
-        console.log(error)
-        reject('Parece que algo ha salido mal...')
-      }
-    }) 
-  }
-
   uploadBookResponse(response) {
     if(response.status !== 200) {
       return false
+    } else if(response.status === 200) {
+      this.existBooks = true
+      this._router.navigate(['/libros'])
+      this.modal = false
+      this._toastr.success(response.message, 'Libro guardado.')
     }
 
-    this.books.push(response.data)
   }
 
   getBunchOfBooks() {
@@ -188,5 +193,9 @@ export class BooksComponent implements OnInit {
       this.currentGenre = genre
       this._api.getBunchOfBooks(values.pagina, this.currentGenre).subscribe(response => this.booksResponse(response))
     })
+  }
+
+  typeOfFormat(value: string) {
+    this.uploadImage = (value === '5ecec9791ba037668c2fc64e') ? true : false
   }
 }

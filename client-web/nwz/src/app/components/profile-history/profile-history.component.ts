@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-profile-history',
@@ -7,9 +8,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProfileHistoryComponent implements OnInit {
 
-  constructor() { }
+  public requested
+
+  constructor(private _api: ApiService) { }
 
   ngOnInit(): void {
+    this._api.getDataHistory().subscribe(response => this.getDataHistoryResponse(response))
+  }
+
+  getDataHistoryResponse(response) {
+    this.requested = response.data
+    console.log(response.data)
   }
 
 }

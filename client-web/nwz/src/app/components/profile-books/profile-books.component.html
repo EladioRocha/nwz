@@ -25,65 +25,15 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td class="px-4 py-2">454645621</td>
-                <td class="px-4 py-2">Títulooo libro</td>
-                <td class="px-4 py-2">Panfilo</td>
-                <td class="px-4 py-2">Categoríaa</td>
-                <td class="px-4 py-2">274</td>
-                <td class="px-4 py-2">Español</td>
-                <td class="px-4 py-2">&#10000;</td>
-                <td class="px-4 py-2">&#10006;</td>
-              </tr>
-              <tr>
-                <td class="px-4 py-2">454645621</td>
-                <td class="px-4 py-2">Títulooo libro</td>
-                <td class="px-4 py-2">Panfilo</td>
-                <td class="px-4 py-2">Categoríaa</td>
-                <td class="px-4 py-2">274</td>
-                <td class="px-4 py-2">Español</td>
-                <td class="px-4 py-2">&#10000;</td>
-                <td class="px-4 py-2">&#10006;</td>
-              </tr>
-              <tr>
-                <td class="px-4 py-2">454645621</td>
-                <td class="px-4 py-2">Títulooo libro</td>
-                <td class="px-4 py-2">Panfilo</td>
-                <td class="px-4 py-2">Categoríaa</td>
-                <td class="px-4 py-2">274</td>
-                <td class="px-4 py-2">Español</td>
-                <td class="px-4 py-2">&#10000;</td>
-                <td class="px-4 py-2">&#10006;</td>
-              </tr>
-              <tr>
-                <td class="px-4 py-2">454645621</td>
-                <td class="px-4 py-2">Títulooo libro</td>
-                <td class="px-4 py-2">Panfilo</td>
-                <td class="px-4 py-2">Categoríaa</td>
-                <td class="px-4 py-2">274</td>
-                <td class="px-4 py-2">Español</td>
-                <td class="px-4 py-2">&#10000;</td>
-                <td class="px-4 py-2">&#10006;</td>
-              </tr>
-              <tr>
-                <td class="px-4 py-2">454645621</td>
-                <td class="px-4 py-2">Títulooo libro</td>
-                <td class="px-4 py-2">Panfilo</td>
-                <td class="px-4 py-2">Categoríaa</td>
-                <td class="px-4 py-2">274</td>
-                <td class="px-4 py-2">Español</td>
-                <td class="px-4 py-2">&#10000;</td>
-                <td class="px-4 py-2">&#10006;</td>
-              </tr>
-              <tr>
-                <td class="px-4 py-2">454645621</td>
-                <td class="px-4 py-2">Títulooo libro</td>
-                <td class="px-4 py-2">Panfilo</td>
-                <td class="px-4 py-2">Categoríaa</td>
-                <td class="px-4 py-2">274</td>
-                <td class="px-4 py-2">Español</td>
-                <td class="px-4 py-2">&#10000;</td>
-                <td class="px-4 py-2">&#10006;</td>
+              <tr *ngFor="let book of books">
+                <td class="px-4 py-2">{{ book?.isbn }}</td>
+                <td class="px-4 py-2">{{ book?.title }}</td>
+                <td class="px-4 py-2">{{ book?.author_id.name }}</td>
+                <td class="px-4 py-2">{{ book?.genre_id.name }}</td>
+                <td class="px-4 py-2">{{ book?.number_pages }}</td>
+                <td class="px-4 py-2">{{ book?.language_id.name }}</td>
+                <td class="px-4 py-2"><fa-icon [icon]="['fas', 'edit']" size="sm" [classes]="['text-gray-700', 'cursor-pointer']"></fa-icon></td>
+                <td class="px-4 py-2"><fa-icon [icon]="['fas', 'trash']" size="sm" [classes]="['text-red-400', 'cursor-pointer']"></fa-icon></td>
               </tr>
             </tbody>
           </table>

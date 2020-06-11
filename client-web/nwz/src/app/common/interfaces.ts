@@ -78,6 +78,7 @@ export interface User {
     username: string,
     email: string,
     filename: string,
+    location: any,
     token: string,
     picture: string
 }

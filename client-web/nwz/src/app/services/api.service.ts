@@ -80,6 +80,16 @@ export class ApiService {
   getRankBooks(): Observable<BookRankResponse> {
     return this._http.get<BookRankResponse>(`${this.API_URL}/books/rank`)
   }
+
+  searchBook(term: string): Observable<BooksBunchResponse> {
+    return this._http.get<BooksBunchResponse>(`${this.API_URL}/books/search?book=${term}`)
+  }
+
+  returnBook(book: string) {
+    return this._http.put(`${this.API_URL}/users/record`, {
+      book
+    }, this.setHeaders())
+  }
   /** ==================== END BOOKS ==================== **/
 
 
@@ -96,8 +106,49 @@ export class ApiService {
       book
     }, this.setHeaders())
   }
+
+  getDataHistory() {
+    return this._http.get(`${this.API_URL}/users/books/requested`, this.setHeaders())
+  }
+
+  getMyBooksUploaded() {
+    return this._http.get(`${this.API_URL}/users/books`, this.setHeaders())
+  }
+
+  getMyReports() {
+    return this._http.get(`${this.API_URL}/users/reports`, this.setHeaders())
+  }
+
+  updateDataLocation(country: string, state: string, city: string, neighborhood: string, street: string, houseNumber: string) {
+    return this._http.put(`${this.API_URL}/users/locations`, {
+      country,
+      state,
+      city,
+      neighborhood,
+      street,
+      houseNumber
+    }, this.setHeaders())
+  }
+
+  getMyLocation() {
+    return this._http.get(`${this.API_URL}/users/locations`, this.setHeaders())
+  }
   /** ==================== END USERS ==================== **/
 
+
+  /** ==================== LOCATIONS ==================== **/
+  getCountries(country) {
+    return this._http.get(`${this.API_URL}/locations/countries?current=${country}`, this.setHeaders())
+  }
+
+  getStates(country, state) {
+    return this._http.get(`${this.API_URL}/locations/states?country=${country}&current=${state}`, this.setHeaders())
+  }
+
+  getCities(state, city) {
+    return this._http.get(`${this.API_URL}/locations/cities?state=${state}&current=${city}`, this.setHeaders())
+  }
+  /** ==================== END LOCATIONS ==================== **/
 
   /** ==================== GENRES ==================== **/
   getAllGenres(): Observable<GenresResponse> {

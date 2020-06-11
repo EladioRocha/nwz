@@ -6,6 +6,9 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
+import { ToastrService } from 'ngx-toastr';
+import { BooksService } from 'src/app/services/books.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -16,11 +19,15 @@ export class NavbarComponent implements OnInit {
   public modal: boolean
   public showLoginForm: boolean
   public userPicture: string
+  public search: boolean = false
 
   constructor(
     public _user: UserService,
     private _api: ApiService,
-    private _cookieService: CookieService
+    private _cookieService: CookieService,
+    private _toastr: ToastrService,
+    private _books: BooksService,
+    private _router: Router,
   ) {
     this.modal = false
     this.showLoginForm = true
@@ -38,8 +45,8 @@ export class NavbarComponent implements OnInit {
     if(response.status === 200) {
       this._user.user = response.data
       this.userPicture = `${this._user.API_URL_BASE}/${this._user.user.filename}.png`
-      console.log(response)
     }
+    console.log(response)
   }
 
   showModal() {
@@ -58,11 +65,19 @@ export class NavbarComponent implements OnInit {
   }
 
   loginResponse(response) {
-    this._user.user = response.data
-    this.userPicture = `${this._user.API_URL_BASE}/${this._user.user.filename}.png`
-    this._cookieService.set('token', this._user.user.token)
-    this.modal = false
-    console.log(response)
+    const status = response.status
+    if(status === 200) {
+      this._user.user = response.data
+      this.userPicture = `${this._user.API_URL_BASE}/${this._user.user.filename}.png`
+      this._cookieService.set('token', this._user.user.token)
+      this.modal = false
+      this._toastr.success(response.message, 'Inicio de sesión exitoso.')
+    } else if(status === 400) {
+      this._toastr.warning(response.message, 'Inicio de sesion fallido.')
+    } else {
+      this._toastr.error(response.message, 'Algo ha salido mal.')
+
+    }
   }
 
   register() {
@@ -79,5 +94,19 @@ export class NavbarComponent implements OnInit {
   registerResponse(response) {
     console.log(response)
     this.modal = false
+  }
+
+  searchBooks(term) {
+    this._api.searchBook(term).subscribe(response => {
+      this._books.pagination = response.data.pop()
+      this._books.page = this._books.pagination.page
+      this._books.totalPages = this._books.pagination.totalPages
+      this._books.books = response.data
+    })
+    this._books.fromSearch = true
+    this._books.term = term
+    this._router.navigate(['/libros'])
+        
+    console.log('wooorks', this._books)
   }
 }

@@ -1,15 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-profile-sidenav',
   templateUrl: './profile-sidenav.component.html',
   styleUrls: ['./profile-sidenav.component.scss']
 })
-export class ProfileSidenavComponent implements OnInit {
+export class ProfileSidenavComponent {
 
-  constructor() { }
+  constructor(private _cookieService: CookieService, private _router: Router, private _toastr: ToastrService, private _user: UserService) { }
 
-  ngOnInit(): void {
+  closeSession() {
+    delete this._user.user
+    this._cookieService.delete('token')
+    this._toastr.success('La sesión ha sido terminada.', 'Sesión terminada')
+    this._router.navigate(['/libros'])
   }
 
 }

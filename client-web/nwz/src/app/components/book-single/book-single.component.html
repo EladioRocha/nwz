@@ -11,8 +11,13 @@
               <img class="w-full" src="{{ bookSingle.picture }}" alt="Image">
             </div>
             <div class="book-options pr-4 flex mt-2">
-                <button class="w-1/2 mr-1 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(true)">Solicitar PDF</button>
-                <button class="w-1/2 ml-1 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(false)">Solicitar fisico</button>
+              <div class="w-full" *ngIf="!book?.borrowed">
+                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(true)" id="request-ebook" >Solicitar PDF</button>
+                <button class="w-full ml-2 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(false)" *ngIf="onlyPdf" id="request-book" >Solicitar fisico</button>
+              </div>
+              <div class="w-full" *ngIf="book?.borrowed && hasPdf">
+                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" [routerLink]="['/libros/lectura', bookSingle.book]">Ir a leer</button>
+              </div>
             </div>
           </div>
           <div class="book-info w-3/4">
@@ -24,11 +29,11 @@
             <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">ISBN: </span>{{ book?.isbn }}</p>
             <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Resumen: </span>{{ book?.summary }}</p>
             <div class="w-full">
-              <a class="text-4xl cursor-pointer" (click)="updateRank(1)"><fa-icon [icon]="book?.rank | bookRank: 1" size="md"></fa-icon></a>
-              <a class="text-4xl cursor-pointer" (click)="updateRank(2)"><fa-icon [icon]="book?.rank | bookRank: 2" size="md"></fa-icon></a>
-              <a class="text-4xl cursor-pointer" (click)="updateRank(3)"><fa-icon [icon]="book?.rank | bookRank: 3" size="md"></fa-icon></a>
-              <a class="text-4xl cursor-pointer" (click)="updateRank(4)"><fa-icon [icon]="book?.rank | bookRank: 4" size="md"></fa-icon></a>
-              <a class="text-4xl cursor-pointer" (click)="updateRank(5)"><fa-icon [icon]="book?.rank | bookRank: 5" size="md"></fa-icon></a>
+              <a class="text-4xl cursor-pointer text-red-400" (click)="updateRank(1)"><fa-icon [icon]="book?.rank | bookRank: 1" size="md"></fa-icon></a>
+              <a class="text-4xl cursor-pointer text-red-400" (click)="updateRank(2)"><fa-icon [icon]="book?.rank | bookRank: 2" size="md"></fa-icon></a>
+              <a class="text-4xl cursor-pointer text-red-400" (click)="updateRank(3)"><fa-icon [icon]="book?.rank | bookRank: 3" size="md"></fa-icon></a>
+              <a class="text-4xl cursor-pointer text-red-400" (click)="updateRank(4)"><fa-icon [icon]="book?.rank | bookRank: 4" size="md"></fa-icon></a>
+              <a class="text-4xl cursor-pointer text-red-400" (click)="updateRank(5)"><fa-icon [icon]="book?.rank | bookRank: 5" size="md"></fa-icon></a>
             </div>
           </div>
         </div>
@@ -50,7 +55,7 @@
       </select>
     </div>
   </div>
-  <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="requestBook()" *ngIf="requestDigital">Leer</button>
+  <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="requestBook(true, 'Leer')" *ngIf="requestDigital">Leer</button>
   <!-- END EBOOK -->
 
 

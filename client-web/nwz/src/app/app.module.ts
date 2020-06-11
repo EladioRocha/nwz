@@ -28,6 +28,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BookBorrowedPipe } from './pipes/book-borrowed.pipe';
 import { PaginationPipe } from './pipes/pagination.pipe';
 import { ReaderComponent } from './components/reader/reader.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
+import { SearchPipe } from './pipes/search.pipe';
 
 @NgModule({
   declarations: [
@@ -51,6 +54,7 @@ import { ReaderComponent } from './components/reader/reader.component';
     BookBorrowedPipe,
     PaginationPipe,
     ReaderComponent,
+    SearchPipe,
     // UsersChatComponent,
     // ProfileReportsComponent,
     // ProfileBooksComponent
@@ -60,7 +64,15 @@ import { ReaderComponent } from './components/reader/reader.component';
     AppRoutingModule,
     HttpClientModule,
     PdfViewerModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot({
+      timeOut: 2500,
+      progressBar: true,
+      preventDuplicates: true,
+      progressAnimation: 'increasing',
+      
+    })
   ],
   providers: [ CookieService ],
   bootstrap: [AppComponent]
