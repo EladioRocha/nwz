@@ -11,10 +11,12 @@ const UserSchema = new mongoose.Schema({
     token: {type: String},
     last_login: {type: Date},
     location: {
-        location_id: {type: mongoose.Types.ObjectId, ref: 'Location'},
+        country_id: {type: mongoose.Types.ObjectId, ref: 'Country'},
+        state_id: {type: mongoose.Types.ObjectId, ref: 'State'},
+        city_id: {type: mongoose.Types.ObjectId, ref: 'City'},
         neighborhood: {type: String, minlength: 2, maxlength: 60},
         street: {type: String, minlength: 2, maxlength: 60},
-        house_number: {type: String, maxlength: 4}
+        house_number: {type: String, minlength: 1, maxlength: 4}
     },
     created_at: {type: Date, required: true, default: Date.now},
     updated_at: {type: Date, required: true, default: Date.now}

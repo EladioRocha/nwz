@@ -1,19 +1,20 @@
 const path = require('path'),
     validator = require('validator'),
     mongoose = require('mongoose'),
+    moment = require('moment-timezone'),
     Book = require(path.join(__dirname, '..', '..', 'models', 'Books')),
+    User = require(path.join(__dirname, '..', '..', 'models', 'Users')),
+    Record = require(path.join(__dirname, '..', '..', 'models', 'Records')),
     handleResponse = require(path.join(__dirname, '..', '..', 'helpers', 'handleResponse'));
 
 async function validBook(req, res, next) {
     try {
-        console.log(req.body)
         const bookId = req.body.book;
 
         if(!validator.isMongoId(bookId)) {
             return handleResponse.response(res, 400, null, 'El libro seleccionado es invalido.')
         } else {
             const book = await Book.findOne({_id: mongoose.Types.ObjectId(bookId)}).select('borrowed user_id')
-            console.log(book)
             if(!book) {
                 return handleResponse.response(res, 400, null, 'El libro seleccionado no existe.')
             }
@@ -22,22 +23,6 @@ async function validBook(req, res, next) {
             res.locals.data.borrowed = book.borrowed
         }
         
-        next()
-    } catch (error) {
-        console.log(error)
-        return handleResponse.response(res, 500, null)
-    }
-}
-
-async function validReport(req, res, next) {
-    try {
-        const problem = req.body.problem.trim(' '),
-            optionsLengthProblem = {min: 10, max: 255};
-
-        if(!validator.isLength(problem, optionsLengthProblem)) {
-            return handleResponse.response(res, 400, null, 'El problema es demasiado corto.')
-        }
-
         next()
     } catch (error) {
         console.log(error)
@@ -80,11 +65,107 @@ function isDifferentUser(req, res, next) {
     next()
 }
 
+function isValidAccuser(req, res, next) {
+    try {
+        const accuser = req.body.accuser
+
+        if(!validator.isMongoId(accuser)) {
+            return handleResponse.response(res, 400, null, 'Lo siento parece ser que hay un error en tu reporte, pruebe intentandolo de nuevo.')
+        }
+        if(res.locals.data._id !== accuser) {
+            return handleResponse.response(res, 400, null, 'Lo siento parece ser que hay un error en tu reporte, pruebe intentandolo de nuevo.')
+        }
+
+        const user = User.findOne({_id: mongoose.Types.ObjectId(accuser)}).select('_id')
+
+        if(!user) {
+            return handleResponse.response(res, 400, null, 'Lo siento parece ser que hay un error en tu reporte, pruebe intentandolo de nuevo.')
+        }
+
+        res.locals.report = {
+            accuser
+        }
+
+        next()
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+function isValidAccused(req, res, next) {
+    try {
+        const accused = req.body.accused
+
+        if(!validator.isMongoId(accused)) {
+            return handleResponse.response(res, 400, null, 'El usuario al que deseas reportar no existe por favor intentelo nuevamente.')
+        }
+
+        const user = User.findOne({_id: mongoose.Types.ObjectId(accused)}).select('_id')
+
+        if(!user) {
+            return handleResponse.response(res, 400, null, 'El usuario al que deseas reportar no existe por favor intentelo nuevamente.')
+        }
+
+        res.locals.report.accused = accused
+
+        next()
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+async function isValidReport(req, res, next) {
+    try {
+        const problem = req.body.problem.trim(' '),
+            book = mongoose.Types.ObjectId(res.locals.data.book),
+            accuser = mongoose.Types.ObjectId(res.locals.report.accuser),
+            accused = mongoose.Types.ObjectId(res.locals.report.accused),
+            currentDate = moment.tz('America/Mexico_City').format(),
+            optionsLengthProblem = {min: 10, max: 255};
+
+        if(!validator.isLength(problem, optionsLengthProblem)) {
+            return handleResponse.response(res, 400, null, 'El cuerpo del problema es demasiado corto. Agregue un poco más de detalles.')
+        }
+
+        const record = await Record.findOne({
+            book_id: book,
+            start_date: {
+                $lte: currentDate,
+            },
+            $or: [
+                {
+                    lender_id: accuser,
+                    borrower_id: accused
+                },
+                {
+                    lender_id: accused,
+                    borrower_id: accuser
+                }
+            ],
+        }).select('_id')
+
+        if(!record) {
+            return handleResponse.response(res, 400, null, 'Parece que no tienes ningún intercambio con el usuario ha reportar.')
+        }
+        
+        res.locals.report.problem = problem
+        next()
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+
 module.exports = {
     validBook,
     borrowedBook,
     isFree,
     isValidDays,
-    validReport,
-    isDifferentUser
+    isDifferentUser,
+    isValidAccuser,
+    isValidAccused,
+    isValidReport
 }

@@ -3,7 +3,14 @@ const path = require('path'),
     morgan = require('morgan'),
     cors = require('cors'),
     express = require('express'),
-    app = express();
+    app = express(),
+    server = require('http').Server(app),
+    io = require('socket.io')(server);
+
+io.on('connection', socket => {
+    console.log('woorks')
+    socket.emit('test', 'wooooooooorks')
+})
 
 app.use(morgan('dev'))
 app.use(cors())
@@ -15,7 +22,8 @@ app.use('/api/v1/books', require(path.join(__dirname, 'services', 'books', 'rout
 app.use('/api/v1/genres', require(path.join(__dirname, 'services', 'genres', 'routes')))
 app.use('/api/v1/formats', require(path.join(__dirname, 'services', 'formats', 'routes')))
 app.use('/api/v1/languages', require(path.join(__dirname, 'services', 'languages', 'routes')))
+app.use('/api/v1/locations', require(path.join(__dirname, 'services', 'locations', 'routes')))
 app.use('/api/v1/users', require(path.join(__dirname, 'services', 'users', 'routes')))
 app.use('/api/v1/test', require(path.join(__dirname, 'services', 'test', 'routes')))
 
-module.exports = app
+module.exports = server

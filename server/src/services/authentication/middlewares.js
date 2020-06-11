@@ -83,13 +83,13 @@ async function login(req, res, next) {
 
         const data = await User.findOne({
             email,
-        }).select('firstname lastname username email password filename')
+        }).populate('location.country_id location.state_id location.city_id', 'name').select('firstname lastname username email password filename location')
 
         if (!data || !bcrypt.compareSync(password, data.password)) {
-            return res.status(400).json({ data: { message: 'Nombre de usuario o contraseña incorrectos.', status: 400, statusText: 'Bad Request' } })
+            return handleResponse.response(res, 400, null, 'Nombre de usuario o contraseña incorrectos')
         }
 
-        const token = generateToken({ _id: data._id, firstname: data.firstname, lastname: data.lastname, username: data.username, email: data.email, filename: data.filename}) 
+        const token = generateToken({ _id: data._id, firstname: data.firstname, lastname: data.lastname, username: data.username, email: data.email, filename: data.filename, location: data.location}) 
         res.locals.data = { 
             _id: data._id,
             token
@@ -101,6 +101,7 @@ async function login(req, res, next) {
             username: data.username,
             email: data.email,
             filename: data.filename,
+            location: data.location,
             token,
         }
 
@@ -126,7 +127,7 @@ async function validToken(req, res, next) {
     try {
         const token = getToken(req.headers.authorization)
         if (!validator.isJWT(token)) {
-            return handleResponse.response(res, 400, null, 'El token enviado es invalido.')
+            return handleResponse.response(res, 400, null, 'No tienes una sesión activa, inicie sesión para continuar.')
         }
         const { data } = jwt.verify(token, process.env.JWT_SECRET_KEY)
         res.locals.data = data

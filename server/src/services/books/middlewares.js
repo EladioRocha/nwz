@@ -251,5 +251,5 @@ module.exports = {
     validDataBook,
     validQualificationBook,
     isValidPdf,
-    userHasBook
+    userHasBook,
 }
