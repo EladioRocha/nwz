@@ -24,6 +24,7 @@
     "@fortawesome/free-brands-svg-icons": "^5.13.0",
     "@fortawesome/free-regular-svg-icons": "^5.13.0",
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "angular-ng-autocomplete": "^2.0.1",
     "ng2-pdf-viewer": "^3.0.8",
     "ngx-cookie-service": "^3.0.4",
     "ngx-socket-io": "^3.0.1",

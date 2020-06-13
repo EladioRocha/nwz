@@ -15,7 +15,8 @@ export class ProfileSidenavComponent {
 
   closeSession() {
     delete this._user.user
-    this._cookieService.delete('token')
+    this._cookieService.delete('token', '/libros')
+    this._cookieService.delete('token', '/')
     this._toastr.success('La sesión ha sido terminada.', 'Sesión terminada')
     this._router.navigate(['/libros'])
   }

@@ -5,107 +5,146 @@
     <div class="flex flex-wrap">
       <!-- <app-categories class="w-1/5 px-4"></app-categories> -->
       <div class="w-full py-2 px-4">
-        <select
-        class="bg-red-400 appearance-none rounded mb-2 py-2 px-4 text-gray-100 leading-tight focus:outline-none" (change)="filterBooksByGenre($event.target.value)">
+        <select class="bg-red-400 appearance-none rounded mb-2 py-2 px-4 text-gray-100 leading-tight focus:outline-none"
+          (change)="filterBooksByGenre($event.target.value)">
           <option value="All">Todos</option>
           <option value="{{genre._id}}" *ngFor="let genre of genres">{{genre.name}}</option>
         </select>
       </div>
       <div class="w-full books flex flex-wrap">
         <div class="w-full recent-books flex flex-wrap">
-          <app-book-card class="w-1/4 px-4 mb-2" *ngFor="let book of books.books" [_id]="book._id" [title]="book.title" [formats]="book.format_id" [borrowed]="book.borrowed" [genre]="book.genre_id.name" [filename]="book.filename"></app-book-card>
-          <p class="py-2 px-4 text-3xl" *ngIf="existBooks">No se encontraron libros en esta categoría :( intentalo con otra.</p>
+          <app-book-card class="w-1/4 px-4 mb-2" *ngFor="let book of books.books" [_id]="book._id" [title]="book.title"
+            [formats]="book.format_id" [borrowed]="book.borrowed" [genre]="book.genre_id.name"
+            [filename]="book.filename"></app-book-card>
+          <p class="py-2 px-4 text-3xl" *ngIf="existBooks">No se encontraron libros en esta categoría :( intentalo con
+            otra.</p>
         </div>
         <div class="w-full pagination-books px-4 text-center">
-          <app-pagination [page]="books.page" [totalPages]="books.totalPages" (click)="getBunchOfBooks()"></app-pagination>
+          <app-pagination [page]="books.page" [totalPages]="books.totalPages" (click)="getBunchOfBooks()">
+          </app-pagination>
         </div>
       </div>
     </div>
   </div>
-  <button class="btn-upload-book w-full bg-red-400 text-gray-100 font-semibold w-12 h-12 rounded-full focus:outline-none" (click)="showModal()">
+  <button
+    class="btn-upload-book w-full bg-red-400 text-gray-100 font-semibold w-12 h-12 rounded-full focus:outline-none"
+    (click)="showModal()">
     <fa-icon [icon]="['fas', 'file-upload']" size="lg"></fa-icon>
   </button>
 </section>
 <app-modal [visible]="modal" (hide)="hideModal($event)">
   <div class="content py-2 px-4">
     <div class="w-full">
-      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-title" >
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-title">
         Título *
       </label>
-      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica" id="book-title">
+      <input
+        class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white"
+        type="text" placeholder="La singularidad tecnologica" id="book-title">
     </div>
 
     <div class="w-full">
-      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-author" >
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-author">
         Autor *
       </label>
-      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica" id="book-author">
+      <!-- <input
+        class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white"
+        type="text" placeholder="La singularidad tecnologica" id="book-author"> -->
+        <ng-autocomplete class="bg-gray-100 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white" (selected)='selectEvent($event)' [data]="data" [searchKeyword]="keyword" [itemTemplate]="itemTemplate" placeholder="Nombre del autor" (inputChanged)='onChangeSearch($event)'
+          [notFoundTemplate]="notFoundTemplate">
+        </ng-autocomplete>
+
+      <ng-template #itemTemplate let-item>
+        <a [innerHTML]="item.name"></a>
+      </ng-template>
+
+      <ng-template #notFoundTemplate let-notFound>
+        <div [innerHTML]=""></div>
+      </ng-template>
     </div>
     <div class="w-full">
-      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-isbn" >
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-isbn">
         ISBN
       </label>
-      <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica" id="book-isbn">
+      <input
+        class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white"
+        type="text" placeholder="La singularidad tecnologica" id="book-isbn">
     </div>
     <div class="w-full">
-      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-summary" >
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-summary">
         Resumen *
       </label>
-      <textarea class="resize-none appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white" type="text" placeholder="La singularidad tecnologica es un tema apasionante debido a todo lo que involucra..." id="book-summary" rows="5"></textarea>
+      <textarea
+        class="resize-none appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white"
+        type="text" placeholder="La singularidad tecnologica es un tema apasionante debido a todo lo que involucra..."
+        id="book-summary" rows="5"></textarea>
     </div>
     <div class="w-full">
-      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-genre" >
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-genre">
         Género *
       </label>
       <select
-      class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
-      id="book-genre">
+        class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+        id="book-genre">
         <option value="{{genre._id}}" *ngFor="let genre of genres">{{genre.name}}</option>
       </select>
     </div>
     <div class="w-full flex">
       <div class="w-1/2 mr-2">
-        <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-format" >
+        <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-format">
           Formato *
         </label>
         <select
-        class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
-        id="book-format" (change)="typeOfFormat($event.target.value)">
+          class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+          id="book-format" (change)="typeOfFormat($event.target.value)">
           <option value="{{format._id}}" *ngFor="let format of formats">{{format.name}}</option>
           <option value="Ambos">Ambos</option>
         </select>
       </div>
       <div class="w-1/2">
-        <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-language" >
+        <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-language">
           Idioma *
         </label>
         <select
-        class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
-        id="book-language">
-        <option value="{{language._id}}" *ngFor="let language of languages">{{language.name}}</option>
-      </select>
+          class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+          id="book-language">
+          <option value="{{language._id}}" *ngFor="let language of languages">{{language.name}}</option>
+        </select>
       </div>
     </div>
     <div class="flex w-full items-center justify-center bg-grey-lighter mt-2" *ngIf="!uploadImage">
-      <label class="w-full flex flex-col items-center px-4 py-2 bg-gray-100 text-blue rounded-lg tracking-wide cursor-pointer hover:bg-blue hover:text-grbg-gray-100">
+      <label
+        class="w-full flex flex-col items-center px-4 py-2 bg-gray-100 text-blue rounded-lg tracking-wide cursor-pointer hover:bg-blue hover:text-grbg-gray-100">
         <svg class="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-            <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+          <path
+            d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
         </svg>
         <span class="mt-2 text-xs text-gray-700 text-center">Selecciona el libro</span>
         <input type='file' class="hidden" id="book-file">
-    </label>
+      </label>
+    </div>
+    <div class="w-full" *ngIf="uploadImage">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-number-pages">
+        Número de páginas *
+      </label>
+      <input
+        class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white"
+        type="text" placeholder="La singularidad tecnologica" id="book-number-pages">
     </div>
     <div class="flex w-full items-center justify-center bg-grey-lighter mt-2" *ngIf="uploadImage">
-      <label class="w-full flex flex-col items-center px-4 py-2 bg-gray-100 text-blue rounded-lg tracking-wide cursor-pointer hover:bg-blue hover:text-grbg-gray-100">
+      <label
+        class="w-full flex flex-col items-center px-4 py-2 bg-gray-100 text-blue rounded-lg tracking-wide cursor-pointer hover:bg-blue hover:text-grbg-gray-100">
         <svg class="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-            <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+          <path
+            d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
         </svg>
         <span class="mt-2 text-xs text-gray-700 text-center">Selecciona la imágen</span>
-        <input type='file' class="hidden" id="book-image">
-    </label>
+        <input type='file' class="hidden" id="book-file">
+      </label>
     </div>
   </div>
-  
-  <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="uploadBook()">Publicar</button>
+
+  <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none"
+    (click)="uploadBook()">Publicar</button>
 </app-modal>
 <app-footer></app-footer>

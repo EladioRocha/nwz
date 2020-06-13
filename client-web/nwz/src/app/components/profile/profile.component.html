@@ -50,7 +50,7 @@
           <select
             class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
             id="profile-country" disabled (change)="updateCountry($event.target.value)">
-            <option value="{{ _user.user?.location.country_id?._id }}" selected>{{ _user.user?.location.country_id?.name }}</option>
+            <option value="{{ _user.user?.location?.country_id?._id }}" selected>{{ _user.user?.location?.country_id?.name }}</option>
             <option *ngFor="let country of countries" value="{{ country._id }}">{{ country.name }}</option>
           </select>
         </div>
@@ -61,7 +61,7 @@
           <select
             class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
             id="profile-state" disabled (change)="updateState($event.target.value)">
-            <option value="{{ _user.user?.location.state_id?._id }}" selected>{{ _user.user?.location.state_id?.name }}</option>
+            <option value="{{ _user.user?.location?.state_id?._id }}" selected>{{ _user.user?.location?.state_id?.name }}</option>
             <option *ngFor="let state of states" value="{{ state._id }}">{{ state.name }}</option>
           </select>
         </div>
@@ -72,7 +72,7 @@
           <select
             class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
             id="profile-city" disabled (change)="updateCity($event.target.value)">
-            <option value="{{ _user.user?.location.city_id?._id }}" selected>{{ _user.user?.location.city_id?.name }}</option>
+            <option value="{{ _user.user?.location?.city_id?._id }}" selected>{{ _user.user?.location?.city_id?.name }}</option>
             <option *ngFor="let city of cities" value="{{ city._id }}">{{ city.name }}</option>
           </select>
         </div>
@@ -82,7 +82,7 @@
           </label>
           <input
             class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-            disabled type="text" value="{{ _user.user?.location.neighborhood }}" id="profile-neighborhood">
+            disabled type="text" value="{{ _user.user?.location?.neighborhood }}" id="profile-neighborhood">
         </div>
         <div class="w-1/2 location" (dblclick)="activateField($event.target)">
           <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="profile-street">
@@ -90,7 +90,7 @@
           </label>
           <input
             class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-            disabled type="text" value="{{ _user.user?.location.street }}" id="profile-street">
+            disabled type="text" value="{{ _user.user?.location?.street }}" id="profile-street">
         </div>
         <div class="w-1/2 pr-4 location" (dblclick)="activateField($event.target)">
           <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="profile-house-number">
@@ -98,7 +98,7 @@
           </label>
           <input
             class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-            disabled type="text" value="{{ _user.user?.location.house_number }}" id="profile-house-number">
+            disabled type="text" value="{{ _user.user?.location?.house_number }}" id="profile-house-number">
         </div>
         <div class="w-full flex justify-end" *ngIf="btnSaveDataLocation">
           <button class="bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="saveDataLocation()">Guardar</button>

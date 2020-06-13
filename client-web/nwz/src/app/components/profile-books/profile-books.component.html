@@ -6,9 +6,10 @@
       <div class="history-data w-3/4 h-64 flex flex-wrap">
         <h2 class="w-full text-3xl font-semibold text-gray-700">Mis libros</h2>
         <div class="w-1/2 pr-4">
-            <input
+          <input
             class="bg-gray-100 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-            id="profile-searcher" type="text" placeholder="Buscar libro por título o ISBN" autocomplete="off">
+            id="profile-searcher" type="text" placeholder="Buscar libro por título o ISBN" autocomplete="off"
+            (keyup.enter)="searchBook($event.target.value)">
         </div>
         <div class="w-full table-books">
           <table class="table-auto text-gray-700">
@@ -32,8 +33,13 @@
                 <td class="px-4 py-2">{{ book?.genre_id.name }}</td>
                 <td class="px-4 py-2">{{ book?.number_pages }}</td>
                 <td class="px-4 py-2">{{ book?.language_id.name }}</td>
-                <td class="px-4 py-2"><fa-icon [icon]="['fas', 'edit']" size="sm" [classes]="['text-gray-700', 'cursor-pointer']"></fa-icon></td>
-                <td class="px-4 py-2"><fa-icon [icon]="['fas', 'trash']" size="sm" [classes]="['text-red-400', 'cursor-pointer']"></fa-icon></td>
+                <td class="px-4 py-2">
+                  <fa-icon [icon]="['fas', 'edit']" size="sm" [classes]="['text-gray-700', 'cursor-pointer']"
+                    (click)=openModalDataBook(book?._id)></fa-icon>
+                </td>
+                <td class="px-4 py-2" (click)="deleteBook(book?._id)">
+                  <fa-icon [icon]="['fas', 'trash']" size="sm" [classes]="['text-red-400', 'cursor-pointer']"></fa-icon>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -42,3 +48,97 @@
     </div>
   </div>
 </section>
+
+<!-- ============================== APP MODAL ========================== -->
+<app-modal [visible]="modal" (hide)="hideModal($event)">
+  <div class="content py-2 px-4">
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-title">
+        Título *
+      </label>
+      <input
+        class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white"
+        type="text" value="{{ singleBook?.title }}" id="book-title">
+    </div>
+
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-author">
+        Autor *
+      </label>
+      <!-- <input class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white" type="text" value="{{ singleBook?.author_id?.name }}" id="book-author"> -->
+      <ng-autocomplete class="bg-gray-100 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white"
+        (selected)='selectEvent($event)' [data]="data" [searchKeyword]="keyword" [itemTemplate]="itemTemplate"
+        placeholder="Nombre del autor" (inputChanged)='onChangeSearch($event)' [notFoundTemplate]="notFoundTemplate">
+      </ng-autocomplete>
+
+      <ng-template #itemTemplate let-item>
+        <a [innerHTML]="item.name"></a>
+      </ng-template>
+
+      <ng-template #notFoundTemplate let-notFound>
+        <div [innerHTML]=""></div>
+      </ng-template>
+
+    </div>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-isbn">
+        ISBN
+      </label>
+      <input
+        class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white"
+        type="text" value="{{ singleBook?.isbn }}" id="book-isbn">
+    </div>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-summary">
+        Resumen *
+      </label>
+      <textarea
+        class="resize-none appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white"
+        type="text" value="{{ singleBook?.summary }}" id="book-summary" rows="5"></textarea>
+    </div>
+    <div class="w-full">
+      <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-number-pages">
+        Número de páginas *
+      </label>
+      <input
+        class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white"
+        value="{{ singleBook?.number_pages }}" id="book-number-pages">
+    </div>
+    <div class="w-full flex">
+      <div class="w-1/2">
+        <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-language">
+          Idioma *
+        </label>
+        <select
+          class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+          id="book-language">
+          <option value="{{singleBook?.language_id?._id}}">{{ singleBook?.language_id.name }}</option>
+        </select>
+      </div>
+      <div class="w-1/2">
+        <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-genre">
+          Género *
+        </label>
+        <select
+          class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+          id="book-genre">
+          <option value="{{ singleBook?.genre_id?._id }}">{{ singleBook?.genre_id?.name }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex w-full items-center justify-center bg-grey-lighter mt-2">
+      <label
+        class="w-full flex flex-col items-center px-4 py-2 bg-gray-100 text-blue rounded-lg tracking-wide cursor-pointer hover:bg-blue hover:text-grbg-gray-100">
+        <svg class="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+          <path
+            d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+        </svg>
+        <span class="mt-2 text-xs text-gray-700 text-center">Selecciona la imágen</span>
+        <input type='file' class="hidden" id="book-file">
+      </label>
+    </div>
+  </div>
+
+  <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none"
+    (click)="updateBook(singleBook?._id)">Actualizar</button>
+</app-modal>

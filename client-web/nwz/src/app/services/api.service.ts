@@ -85,19 +85,39 @@ export class ApiService {
     return this._http.get<BooksBunchResponse>(`${this.API_URL}/books/search?book=${term}`)
   }
 
-  returnBook(book: string) {
-    return this._http.put(`${this.API_URL}/users/record`, {
-      book
+  deleteBook(book: string) {
+    return this._http.delete(`${this.API_URL}/books?book=${book}`, this.setHeaders())
+  }
+
+  updateBook(title: string, author: string, isbn: string, numPages: unknown, summary: string, genre: string, language: string, book: unknown, _id) {
+    return this._http.put(`${this.API_URL}/books`, {
+      title,
+      author,
+      isbn,
+      numPages,
+      summary,
+      genre,
+      language,
+      book,
+      _id
     }, this.setHeaders())
   }
+
+  getAuthors(author) {
+    return this._http.get(`${this.API_URL}/books/authors?author=${author}`)
+  }
+
   /** ==================== END BOOKS ==================== **/
 
 
   /** ==================== USERS ==================== **/
-  requestBook(book: string, days: number): Observable<DataNullResponse> {
+  requestBook(book: string, days: number, format: string, formatType, borrower_id = undefined): Observable<DataNullResponse> {
     return this._http.post<DataNullResponse>(`${this.API_URL}/users/record`, {
       book,
-      days
+      days,
+      format,
+      formatType,
+      borrower_id
     }, this.setHeaders())
   }
 
@@ -132,6 +152,46 @@ export class ApiService {
 
   getMyLocation() {
     return this._http.get(`${this.API_URL}/users/locations`, this.setHeaders())
+  }
+
+  returnBook(book: string, formatType: string) {
+    return this._http.put(`${this.API_URL}/users/record`, {
+      book,
+      formatType
+    }, this.setHeaders())
+  }
+
+  uploadImage(image) {
+    return this._http.put(`${this.API_URL}/users/picture`, {
+      image
+    }, this.setHeaders())
+  }
+
+  updateUsername(username) {
+    return this._http.put(`${this.API_URL}/users/username`, {
+      username
+    }, this.setHeaders())
+  }
+
+  getChats() {
+    return this._http.get(`${this.API_URL}/users/chats`, this.setHeaders())
+  }
+
+  getMessages(chat) {
+    return this._http.get(`${this.API_URL}/users/chats/${chat}`, this.setHeaders())
+  }
+
+  createReport(accuser, accused, book, problem) {
+    return this._http.post(`${this.API_URL}/users/report`, {
+      accuser,
+      accused,
+      book,
+      problem
+    }, this.setHeaders())
+  }
+
+  getMyBooksNoEbook() {
+    return this._http.get(`${this.API_URL}/users/chats/books`, this.setHeaders())
   }
   /** ==================== END USERS ==================== **/
 

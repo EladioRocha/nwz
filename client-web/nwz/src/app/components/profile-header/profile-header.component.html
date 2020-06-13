@@ -2,11 +2,36 @@
   <div class="flex">
     <div class="w-1/4 overflow-hidden">
       <div class="profile-image">
-        <img class="w-64 h-64 rounded-full shadow-md" src="https://picsum.photos/id/1/200/300" alt="Image">
+        <label *ngIf="uploadImage"
+          class="h-64 w-64 flex flex-col items-center px-4 py-2 text-blue rounded-lg tracking-wide cursor-pointer hover:bg-blue hover:text-grbg-gray-100">
+          <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path
+              d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+          </svg>
+          <span class="mt-2 text-xs text-gray-700 text-center">Selecciona la imágen</span>
+          <input type='file' class="hidden" id="profile-file" *ngIf="uploadImage">
+          <div class="w-full">
+            <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="saveImage()">Guardar</button>
+          </div>
+        </label>
+        <img class="w-64 h-64 rounded-full shadow-md" src="{{ _user.user?.filename }}" alt="Image"
+          (dblclick)="uploadProfileImage()" *ngIf="!uploadImage">
       </div>
     </div>
     <div class="w-3/4 my-auto profile-name">
-      <h2 class="w-full text-gray-700 text-4xl font-bold">{{ _user.user?.username }}</h2>
+      <div class="w-1/2 location" *ngIf="showInput">
+        <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="profile-username">
+          Nombre de usuario
+        </label>
+        <input
+          class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+          type="text" value="{{ _user.user?.username }}" id="profile-username">
+          <div class="w-full flex justify-end" *ngIf="showInput || uploadImage">
+            <button class="bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="updateUsername()">Guardar</button>
+          </div>
+        </div>
+      <h2 class="w-full text-gray-700 text-4xl font-bold cursor-pointer" (dblclick)="ableInput()" *ngIf="!showInput">
+        {{ _user.user?.username }}</h2>
     </div>
   </div>
 </section>

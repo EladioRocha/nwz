@@ -11,13 +11,35 @@
               <img class="w-full" src="{{ bookSingle.picture }}" alt="Image">
             </div>
             <div class="book-options pr-4 flex mt-2">
-              <div class="w-full" *ngIf="!book?.borrowed">
-                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(true)" id="request-ebook" >Solicitar PDF</button>
-                <button class="w-full ml-2 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(false)" *ngIf="onlyPdf" id="request-book" >Solicitar fisico</button>
+              <div class="w-full" *ngIf="!hasPdf && hasBook && !bookBorrowed">
+                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(false)" id="request-book" >Solicitar fisico</button>
               </div>
-              <div class="w-full" *ngIf="book?.borrowed && hasPdf">
+              <div class="w-full" *ngIf="hasPdf && !hasBook && !pdfBorrowed">
+                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(true)" id="request-ebook">Solicitar PDF</button>
+              </div>
+              <div class="w-full flex" *ngIf="hasPdf && hasBook && !pdfBorrowed && !bookBorrowed">
+                <button class="w-1/2 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none mr-2" (click)="showModal(true)" id="request-ebook">Solicitar PDF</button>
+                <button class="w-1/2 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(false)" id="request-book" >Solicitar fisico</button>
+              </div>
+              <div class="w-full flex" *ngIf="hasPdf && hasBook && pdfBorrowed && !bookBorrowed">
+                <button class="w-1/2 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none mr-2" [routerLink]="['/libros/lectura', bookSingle.book]">Ir a leer</button>
+                <button class="w-1/2 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(false)" id="request-book" >Solicitar fisico</button>
+              </div>
+              <div class="w-full flex" *ngIf="hasPdf && hasBook && !pdfBorrowed && bookBorrowed">
+                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none mr-2" (click)="showModal(true)" id="request-ebook">Solicitar PDF</button>
+              </div>
+              <div class="w-full flex" *ngIf="hasPdf && !hasBook && pdfBorrowed">
+                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none mr-2" [routerLink]="['/libros/lectura', bookSingle.book]">Ir a leer</button>
+              </div>
+              <div class="w-full flex" *ngIf="!hasPdf && hasBook && bookBorrowed">
+                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none mr-2" [routerLink]="['/libros/lectura', bookSingle.book]">Devolver</button>
+              </div>
+              <!-- <div class="w-full flex" *ngIf="hasPdf && hasBook && !pdfBorrowed && bookBorrowed">
+                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none mr-2" (click)="showModal(true)" id="request-ebook">Solicitar PDF</button>
+              </div> -->
+              <!-- <div class="w-full" *ngIf="hasPdf">
                 <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" [routerLink]="['/libros/lectura', bookSingle.book]">Ir a leer</button>
-              </div>
+              </div> -->
             </div>
           </div>
           <div class="book-info w-3/4">
@@ -55,7 +77,7 @@
       </select>
     </div>
   </div>
-  <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="requestBook(true, 'Leer')" *ngIf="requestDigital">Leer</button>
+  <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="requestBook('5ecec9791ba037668c2fc64c', 'ebook')" *ngIf="requestDigital">Leer</button>
   <!-- END EBOOK -->
 
 

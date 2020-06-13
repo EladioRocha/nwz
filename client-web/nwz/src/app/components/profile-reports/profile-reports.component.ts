@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-profile-reports',
@@ -10,7 +11,7 @@ export class ProfileReportsComponent implements OnInit {
 
   public reports
 
-  constructor(private _api: ApiService) { 
+  constructor(private _api: ApiService, private _toastr: ToastrService) { 
 
     
   }
@@ -21,7 +22,14 @@ export class ProfileReportsComponent implements OnInit {
 
   getMyReportsResponse(response) {
     console.log(response)
-    this.reports = response.data
+    const status = response.status
+    if(status === 200) {
+      this.reports = response.data
+    } else if(status === 400) {
+      this._toastr.warning(response.message)
+    } else {
+      this._toastr.error(response.message, 'Algo ha fallado')
+    }
   }
 
   test() {

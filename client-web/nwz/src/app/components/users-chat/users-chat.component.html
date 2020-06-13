@@ -1,50 +1,75 @@
 <main class="flex h-full-sub-header">
     <article class="relative w-1/6 bg-gray-100 h-full">
-        <div class="user-chat-contact w-full bg-gray-100 h-16 flex">
+        <div class="user-chat-contact w-full bg-gray-100 h-16 flex cursor-pointer" *ngFor="let chat of chats"
+            (click)="getMessagesFromChat(chat._id, chat.user_1_id?._id, chat.user_2_id?._id)">
             <div class="user-chat-image w-1/2 py-2 px-4">
-                <img class="w-12 h-12 rounded-full shadow-md" src="https://picsum.photos/id/1/200/300" alt="Image">
+                <img class="w-12 h-12 rounded-full shadow-md" src="{{API_URL_BASE}}/{{ chat?.user_1_id?.filename }}.png"
+                    alt="Image" *ngIf="chat?.user_1_id?._id !== _user.user?._id">
+                <img class="w-12 h-12 rounded-full shadow-md" src="{{API_URL_BASE}}/{{ chat?.user_2_id?.filename }}.png"
+                    alt="Image" *ngIf="chat?.user_2_id?._id !== _user.user?._id">
             </div>
             <div class="user-chat-name w-1/2 my-auto">
-                <p class="text-gray-700 cursor-none">Usuario1344</p>
-            </div>
-        </div>
-        <div class="user-chat-contact w-full bg-gray-100 h-16 flex">
-            <div class="user-chat-image w-1/2 py-2 px-4">
-                <img class="w-12 h-12 rounded-full shadow-md" src="https://picsum.photos/id/1/200/300" alt="Image">
-            </div>
-            <div class="user-chat-name w-1/2 my-auto">
-                <p class="text-gray-700 cursor-none">Usuario1344</p>
+                <p class="text-gray-700 cursor-none" *ngIf="chat?.user_1_id?._id !== _user.user?._id">
+                    {{ chat?.user_1_id?.username }}</p>
+                <p class="text-gray-700 cursor-none" *ngIf="chat?.user_2_id?._id !== _user.user?._id">
+                    {{ chat?.user_2_id?.username }}</p>
+
             </div>
         </div>
     </article>
     <article class="relative w-5/6 max-h-full">
         <div class="user-chat-info w-full bg-gray-100 h-16 flex">
-            <div class="user-chat-image w-1/2 py-2 px-4">
-                <img class="w-12 h-12 rounded-full shadow-md" src="https://picsum.photos/id/1/200/300" alt="Image">
-            </div>
-            <div class="user-chat-name w-1/2 my-auto relative">
-                <p class="text-gray-700 cursor-none">Usuario1344</p>
-            </div>
+            <div class="user-chat-image w-1/2 py-2 px-4"></div>
+            <div class="user-chat-name w-1/2 my-auto relative"></div>
         </div>
-        <div class="user-chat-messages relative h-chat-messages overflow-auto py-2 px-4">
+        <div class="user-chat-messages relative h-chat-messages overflow-auto py-2 px-4" id="user-chat-messages">
             <div class="w-full">
-                <div class="w-full user-chat-message-local">
-                    <p class="text-gray-700 text-lg">Hola como estas me interesa el libro.</p>
-                </div>
-                <div class="w-full user-chat-message-contact">
-                    <p class="text-gray-700 text-lg">Por su pollo que si.</p>
+                <div class="w-full user-chat-message-local"
+                    [ngClass]="{'w-full user-chat-message-local': message.sender_id === _user.user?._id, 'w-full user-chat-message-contact': message.sender_id !== _user.user?._id}"
+                    *ngFor="let message of messages">
+                    <p class="text-gray-700 text-lg">{{ message.text }}</p>
                 </div>
             </div>
         </div>
-        <div class="user-chat-info w-full bg-gray-100 h-16 relative bottom-0 flex">
+        <div class="user-chat-info w-full bg-gray-100 h-16 relative bottom-0 flex" *ngIf="_showFooterChat">
             <div class="user-chat-write w-full my-auto py-2 px-4">
                 <input
-                class="bg-gray-100 shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
-                id="write-message" type="text" placeholder="Escribe tu mensaje" autocomplete="off">
+                    class="bg-gray-100 shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+                    id="write-message" type="text" placeholder="Escribe tu mensaje" autocomplete="off"
+                    (keyup.enter)="sendMessage($event.target, $event.target.value)">
             </div>
             <div class="user-chat-send py-2 px-4">
-                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none">Enviar</button>
+                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none"
+                    (click)="showModal()">Liberar</button>
             </div>
         </div>
     </article>
 </main>
+
+<app-modal [visible]="modal" (hide)="hideModal($event)">
+    <div class="content py-2 px-4">
+        <div class="w-full mr-2">
+            <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-books">
+              Selecciona el libro *
+            </label>
+            <select
+              class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+              id="book-books" (change)="selectDays($event.target.value)">
+              <option value="{{ book?._id }}" *ngFor="let book of books">{{ book?.title }}</option>
+            </select>
+        </div>
+        <div class="w-full mr-2">
+            <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="book-days">
+              Días *
+            </label>
+            <select
+              class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+              id="book-days" (change)="selectDays($event.target.value)">
+              <option value="{{ day }}" *ngFor="let day of days">{{ day }}</option>
+            </select>
+        </div>
+    </div>
+
+    <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none"
+        (click)="breakFreeBook()">Liberar</button>
+</app-modal>

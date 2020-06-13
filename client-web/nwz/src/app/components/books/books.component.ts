@@ -25,7 +25,10 @@ export class BooksComponent implements OnInit {
   public currentGenre: string
   public existBooks: boolean
   public booksRank: BooksRank
-  public uploadImage: boolean = true
+  public uploadImage: boolean = false
+  public keyword: string = 'name'
+  public data: any[]
+  private _currentAuthor: string
 
   @ViewChild('app-pagination') pagination
 
@@ -114,17 +117,24 @@ export class BooksComponent implements OnInit {
   async uploadBook() {
     try {
       const title: string = (document.querySelector('#book-title') as HTMLInputElement).value,
-        author: string = (document.querySelector('#book-author') as HTMLInputElement).value,
+        author: string = this._currentAuthor,
         isbn: string = (document.querySelector('#book-isbn') as HTMLInputElement).value,
         summary: string = (document.querySelector('#book-summary') as HTMLInputElement).value,
         genre: string = (document.querySelector('#book-genre') as HTMLInputElement).value,
         format: string = (document.querySelector('#book-format') as HTMLInputElement).value,
         language: string = (document.querySelector('#book-language') as HTMLInputElement).value,
-        file = (document.querySelector('#book-file') as HTMLInputElement).files[0],
-        data: unknown = await Promise.all([this.getBase64Book(file), this.getNumberPages(file)]),
-        book: unknown = data[0],
-        numPages: unknown = data[1];
-
+        file = (document.querySelector('#book-file') as HTMLInputElement).files[0];
+        let data: unknown,
+          book: unknown,
+          numPages: unknown;
+        if(!this.uploadImage) {
+          data = await Promise.all([this.getBase64File(file), this.getNumberPages(file)])
+          book = data[0]
+          numPages = data[1]
+        } else {
+          book = await this.getBase64File(file)
+          numPages = (document.querySelector('#book-number-pages') as HTMLInputElement).value
+        }   
         this._api.uploadBook(title, author, isbn, numPages, summary, genre, [...(format === 'Ambos') ? '5ecec9791ba037668c2fc64c,5ecec9791ba037668c2fc64e'.split(',') : [format]], language, book).subscribe(response => this.uploadBookResponse(response))
     } catch (error) {
       if(error === 'Parece que se ta ha olvidado subir un libro...') {
@@ -133,13 +143,13 @@ export class BooksComponent implements OnInit {
     }
   }
 
-  getBase64Book(file): unknown {
+  getBase64File(file): unknown {
     return new Promise((resolve, reject) => {
-      try {
-        console.log(file)
+      try {        
         const reader = new FileReader()
         reader.readAsDataURL(file)
         reader.onload = () => {
+          console.log(reader.result)
           resolve(reader.result)
         }
       } catch (error) {
@@ -197,5 +207,18 @@ export class BooksComponent implements OnInit {
 
   typeOfFormat(value: string) {
     this.uploadImage = (value === '5ecec9791ba037668c2fc64e') ? true : false
+  }
+
+  onChangeSearch(value) {
+    this._currentAuthor = value
+    this._api.getAuthors(value).subscribe(response => this.searchResponse(response))
+  }
+
+  searchResponse(response) {
+    this.data = response.data
+  }
+  
+  selectEvent(value) {
+    this._currentAuthor = value.name 
   }
 }

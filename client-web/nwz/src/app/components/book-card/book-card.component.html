@@ -10,6 +10,6 @@
   <div class="pb-2 px-4">
     <span class="inline-block bg-red-400 rounded-full px-2 py-2 text-xs font-semibold text-gray-100 mr-2 mb-2" *ngFor="let format of formats"><a routerLink="/">{{ format.name }}</a></span>
     <span class="inline-block bg-red-400 rounded-full px-2 py-2 text-xs font-semibold text-gray-100 mr-2 mb-2" *ngIf="hasGenre"><a routerLink="/"> {{ genre }}</a></span>
-    <span class="inline-block bg-red-400 rounded-full px-2 py-2 text-xs font-semibold text-gray-100 mr-2 mb-2"><a routerLink="/">{{ borrowed | bookBorrowed }}</a></span>
+    <span class="inline-block bg-red-400 rounded-full px-2 py-2 text-xs font-semibold text-gray-100 mr-2 mb-2" *ngIf="hasBorrowed"><a routerLink="/">{{ borrowed | bookBorrowed:formats }}</a></span>
   </div>
 </div>

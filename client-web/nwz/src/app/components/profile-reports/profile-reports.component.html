@@ -18,7 +18,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let report of reports">
-                <td class="px-4 py-2"><a [routerLink]="['/libros', report?.book_id._id]">{{ report?.book_id.title }}</a></td>
+                <td class="px-4 py-2"><a [routerLink]="['/libros', report?.book_id?._id]" *ngIf="report?.book_id?._id">{{ report?.book_id?.title }}</a></td>
                 <td class="px-4 py-2"><a routerLink="/usuarios/chat">{{ report?.accused_id.username }}</a></td>
                 <td class="px-4 py-2">{{ report?.start_date | date: 'dd/MM/yyyy' }}</td>
                 <td class="px-4 py-2">{{ report?.problem }}</td>

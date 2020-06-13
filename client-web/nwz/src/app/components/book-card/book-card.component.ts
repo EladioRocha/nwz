@@ -12,9 +12,10 @@ export class BookCardComponent implements OnChanges {
   @Input() title: string
   @Input() formats: Format[]
   @Input() genre: string
-  @Input() borrowed: boolean
+  @Input() borrowed: boolean[]
   @Input() filename: string
   @Input() hasGenre: boolean = true
+  @Input() hasBorrowed: boolean = true
 
   ngOnChanges(changes) {
     if(changes.filename){

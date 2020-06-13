@@ -31,6 +31,7 @@ import { ReaderComponent } from './components/reader/reader.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { SearchPipe } from './pipes/search.pipe';
+import {AutocompleteLibModule} from 'angular-ng-autocomplete';
 
 @NgModule({
   declarations: [
@@ -71,8 +72,8 @@ import { SearchPipe } from './pipes/search.pipe';
       progressBar: true,
       preventDuplicates: true,
       progressAnimation: 'increasing',
-      
-    })
+    }),
+    AutocompleteLibModule
   ],
   providers: [ CookieService ],
   bootstrap: [AppComponent]

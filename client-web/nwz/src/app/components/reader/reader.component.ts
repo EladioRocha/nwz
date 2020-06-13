@@ -62,8 +62,8 @@ export class ReaderComponent implements OnInit {
     }
   }
 
-  returnBook() {
-    this._api.returnBook(this.book).subscribe(response => this.returnBookResponse(response))
+  returnBook(format) {
+    this._api.returnBook(this.book, format).subscribe(response => this.returnBookResponse(response))
   }
 
   returnBookResponse(response) {

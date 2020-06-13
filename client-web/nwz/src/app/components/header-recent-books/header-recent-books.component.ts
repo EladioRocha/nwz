@@ -9,10 +9,7 @@ export class HeaderRecentBooksComponent {
   @Input() booksRank: any
 
   constructor() {
-    setTimeout(() => {
 
-      console.log(this.booksRank)
-    }, 3000)
   }
 
 }

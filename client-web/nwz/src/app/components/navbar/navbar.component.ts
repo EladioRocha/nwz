@@ -18,7 +18,6 @@ import { Router } from '@angular/router';
 export class NavbarComponent implements OnInit {
   public modal: boolean
   public showLoginForm: boolean
-  public userPicture: string
   public search: boolean = false
 
   constructor(
@@ -44,7 +43,7 @@ export class NavbarComponent implements OnInit {
   handleValidSession(response) {
     if(response.status === 200) {
       this._user.user = response.data
-      this.userPicture = `${this._user.API_URL_BASE}/${this._user.user.filename}.png`
+      this._user.user.filename = `${this._user.API_URL_BASE}/${response.data.filename}.png`
     }
     console.log(response)
   }
@@ -68,7 +67,7 @@ export class NavbarComponent implements OnInit {
     const status = response.status
     if(status === 200) {
       this._user.user = response.data
-      this.userPicture = `${this._user.API_URL_BASE}/${this._user.user.filename}.png`
+      this._user.user.filename = `${this._user.API_URL_BASE}/${this._user.user.filename}.png`
       this._cookieService.set('token', this._user.user.token)
       this.modal = false
       this._toastr.success(response.message, 'Inicio de sesión exitoso.')
