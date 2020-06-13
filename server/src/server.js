@@ -7,10 +7,8 @@ const path = require('path'),
     server = require('http').Server(app),
     io = require('socket.io')(server);
 
-io.on('connection', socket => {
-    console.log('woorks')
-    socket.emit('test', 'wooooooooorks')
-})
+require(path.join(__dirname, 'helpers', 'sockets'))(io)
+require(path.join(__dirname, 'helpers', 'updateDate'))
 
 app.use(morgan('dev'))
 app.use(cors())
@@ -24,6 +22,7 @@ app.use('/api/v1/formats', require(path.join(__dirname, 'services', 'formats', '
 app.use('/api/v1/languages', require(path.join(__dirname, 'services', 'languages', 'routes')))
 app.use('/api/v1/locations', require(path.join(__dirname, 'services', 'locations', 'routes')))
 app.use('/api/v1/users', require(path.join(__dirname, 'services', 'users', 'routes')))
-app.use('/api/v1/test', require(path.join(__dirname, 'services', 'test', 'routes')))
+
+
 
 module.exports = server

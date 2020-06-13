@@ -5,7 +5,7 @@ const path = require('path'),
 
 router.get('/', middleware.validToken, controller.getData)
 
-router.post('/register', [middleware.existUser, middleware.register], controller.register)
+router.post('/register', [middleware.existUser, middleware.existEmail, middleware.register], controller.register)
 router.post('/login', middleware.login, controller.login)
 
 module.exports = router

@@ -7,11 +7,11 @@ const BookSchema = new mongoose.Schema({
     format_id: [{type: mongoose.Types.ObjectId, ref: 'Format'}],
     author_id: {type: mongoose.Types.ObjectId, required: true, ref: 'Author'},
     user_id: {type: mongoose.Types.ObjectId, required: true, ref: 'User'},
+    borrowed: {type: [Boolean], required: true, default: [false, false]},
     title: {type: String, required: true, minlength: 2, maxlength: 255},
     isbn: {type: String,  minlength: 10, maxlength: 13},
     number_pages: {type: Number, required: true, min: 1, max: 10000},
     summary: {type: String, required: true, minlength: 10, maxlength: 1000},
-    borrowed: {type: Boolean, required: true, default: false},
     filename: {type: String, required: true},
     rank: [{
         user_id: {type: mongoose.Types.ObjectId, required: true, ref: 'User'},

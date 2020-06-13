@@ -1,29 +1,38 @@
+const { mongo } = require('mongoose');
+
 const path = require('path'),
     mongoose = require('mongoose'),
     moment = require('moment-timezone'),
+    fs = require('fs'),
     Book = require(path.join(__dirname, '..', '..', 'models', 'Books')),
     Record = require(path.join(__dirname, '..', '..', 'models', 'Records')),
     User = require(path.join(__dirname, '..', '..', 'models', 'Users')),
     Report = require(path.join(__dirname, '..', '..', 'models', 'Reports')),
     Chat = require(path.join(__dirname, '..', '..', 'models', 'Chats')),
-    handleResponse = require(path.join(__dirname, '..', '..', 'helpers', 'handleResponse'));
+    Message = require(path.join(__dirname, '..', '..', 'models', 'Messages')),
+    handleResponse = require(path.join(__dirname, '..', '..', 'helpers', 'handleResponse')),
+    uploadFile = require(path.join(__dirname, '..', '..', 'helpers', 'uploadFileToAWS'));
+
 require(path.join(__dirname, '..', '..', 'models', 'StatusReports'))
 
 async function createRecord(req, res) {
     try {
-        const {_id, book, userId, days} = res.locals.data,
+        const { _id, book, userId, days, formatType, borrowed } = res.locals.data,
+            position = (formatType === 'ebook') ? 0 : 1
+            borrowed[position] = true
             currentDate = moment.tz('America/Mexico_City').format(),
             currentTime = moment.tz('America/Mexico_City').format('HH:mm:ss'),
             endDate = moment(currentDate).add(days, 'days');
 
         await Book.updateOne(
-            {_id: mongoose.Types.ObjectId(book)},
-            {$set: {borrowed: true}}
+            { _id: mongoose.Types.ObjectId(book) },
+            { $set: { borrowed: borrowed } } 
         )
         await Record.create({
             lender_id: mongoose.Types.ObjectId(userId),
-            borrower_id: mongoose.Types.ObjectId(_id),
+            borrower_id: (!req.body.borrower_id) ? mongoose.Types.ObjectId(_id) : mongoose.Types.ObjectId(req.body.borrower_id),
             book_id: mongoose.Types.ObjectId(book),
+            format_id: mongoose.Types.ObjectId(req.body.format),
             start_date: currentDate,
             start_time: currentTime,
             end_date: endDate,
@@ -38,13 +47,15 @@ async function createRecord(req, res) {
 
 async function breakFreeBook(req, res) {
     try {
-        const {_id, book, userId} = res.locals.data,
+        const { _id, book, userId, formatType, borrowed } = res.locals.data,
+            position = (formatType === 'ebook') ? 0 : 1
+            borrowed[position] = false,
             currentDate = moment.tz('America/Mexico_City').format(),
             currentTime = moment.tz('America/Mexico_City').format('HH:mm:ss');
-            
+
         await Book.updateOne(
-            {_id: mongoose.Types.ObjectId(book)},
-            {$set: {borrowed: false}}
+            { _id: mongoose.Types.ObjectId(book) },
+            { $set: { borrowed: borrowed } } 
         )
 
         await Record.updateOne(
@@ -52,9 +63,9 @@ async function breakFreeBook(req, res) {
                 lender_id: mongoose.Types.ObjectId(userId),
                 borrower_id: mongoose.Types.ObjectId(_id),
                 book_id: mongoose.Types.ObjectId(book),
-                end_date: {$gte: currentDate} 
+                end_date: { $gte: currentDate }
             },
-            {$set: {end_date: currentDate, end_time: currentTime}}
+            { $set: { end_date: currentDate, end_time: currentTime } }
         )
         return handleResponse.response(res, 200, null, "Libro liberado exitosamente.")
     } catch (error) {
@@ -89,21 +100,34 @@ async function createReport(req, res) {
 
 async function beginChat(req, res) {
     try {
-        const lender_id = mongoose.Types.ObjectId(res.locals.data.userId),
-            borrower_id = mongoose.Types.ObjectId(res.locals.data._id),
+        const user_1_id = mongoose.Types.ObjectId(res.locals.data.userId),
+            user_2_id = mongoose.Types.ObjectId(res.locals.data._id),
             book_id = mongoose.Types.ObjectId(res.locals.data.book),
-            message = '¡Hola! estoy interesado por adquirir prestado el libro.',
+            text = '¡Hola! estoy interesado por adquirir prestado el libro.',
             currentDate = moment.tz('America/Mexico_City').format(),
             currentTime = moment.tz('America/Mexico_City').format('HH:mm:ss');
 
-        await Chat.create({
-            lender_id,
-            borrower_id,
-            book_id,
-            message,
-            message_date: currentDate,
-            message_time: currentTime
+            
+        let chat = await Chat.findOne({
+            $or: [
+                {user_1_id, user_2_id},
+                {user_1_id: user_2_id, user_2_id: user_1_id}
+            ]
         })
+        if(!chat) {
+            chat = await Chat.create({
+                user_1_id,
+                user_2_id,
+                book_id
+            })
+        }
+
+        await Message.create({
+            sender_id: mongoose.Types.ObjectId(user_2_id),
+            chat_id: chat._id,
+            text 
+        })
+
         return handleResponse.response(res, 200, null, 'Tú solicitud se ha enviado con exito')
     } catch (error) {
         console.log(error)
@@ -114,13 +138,13 @@ async function beginChat(req, res) {
 async function myBooks(req, res) {
     try {
         const userId = res.locals.data._id,
-            books = await Book.find({user_id: mongoose.Types.ObjectId(userId)}).populate('author_id genre_id language_id', 'name').select('isbn title author_id genre_id number_pages language');
+            books = await Book.find({ user_id: mongoose.Types.ObjectId(userId) }).populate('author_id genre_id language_id', 'name').select('isbn title author_id genre_id number_pages language');
 
         return handleResponse.response(res, 200, books)
     } catch (error) {
         console.log(error)
         return handleResponse.response(res, 500, null)
-    } 
+    }
 }
 
 async function requestedBooks(req, res) {
@@ -128,56 +152,56 @@ async function requestedBooks(req, res) {
         const userId = res.locals.data._id,
             requested = await Record.find({
                 $or: [
-                    {borrower_id: mongoose.Types.ObjectId(userId)},
-                    {lender_id: mongoose.Types.ObjectId(userId)}
+                    { borrower_id: mongoose.Types.ObjectId(userId) },
+                    { lender_id: mongoose.Types.ObjectId(userId) }
                 ]
             }
-                ).populate(
-            [
-                {
-                    path: 'borrower_id lender_id',
-                    select: 'username'
-                },
-                { 
-                    path: 'book_id',
-                    select: 'title genre_id format_id',
-                    populate: {
-                        path: 'genre_id format_id',
-                        select: 'name'
-                    }
-                },
-            ]).select('borrower_id lender_id book_id start_date end_date start_time end_time')
+            ).populate(
+                [
+                    {
+                        path: 'borrower_id lender_id',
+                        select: 'username'
+                    },
+                    {
+                        path: 'book_id',
+                        select: 'title genre_id format_id',
+                        populate: {
+                            path: 'genre_id format_id',
+                            select: 'name'
+                        }
+                    },
+                ]).select('borrower_id lender_id book_id start_date end_date start_time end_time')
 
 
         return handleResponse.response(res, 200, requested)
     } catch (error) {
         console.log(error)
         return handleResponse.response(res, 500, null)
-    } 
+    }
 }
 
 async function borrowedBooks(req, res) {
     try {
         const userId = res.locals.data._id,
-            requested = await Record.find({borrower_id: mongoose.Types.ObjectId(userId)}).populate(
-            [
-                {
-                    path: 'borrower_id',
-                    select: 'username'
-                },
-                { 
-                    path: 'book_id',
-                    select: 'title genre_id format_id',
-                    populate: {
-                        path: 'genre_id format_id',
-                        select: 'name'
-                    }
-                },
-            ]).select('borrower_id book_id start_date end_date start_time end_time')
-            requested.push({
-                currentDate: moment.tz('America/Mexico_City').format(),
-                currentTime: moment.tz('America/Mexico_City').format('HH:mm:ss')
-            })
+            requested = await Record.find({ borrower_id: mongoose.Types.ObjectId(userId) }).populate(
+                [
+                    {
+                        path: 'borrower_id',
+                        select: 'username'
+                    },
+                    {
+                        path: 'book_id',
+                        select: 'title genre_id format_id',
+                        populate: {
+                            path: 'genre_id format_id',
+                            select: 'name'
+                        }
+                    },
+                ]).select('borrower_id book_id start_date end_date start_time end_time')
+        requested.push({
+            currentDate: moment.tz('America/Mexico_City').format(),
+            currentTime: moment.tz('America/Mexico_City').format('HH:mm:ss')
+        })
 
         return handleResponse.response(res, 200, requested)
     } catch (error) {
@@ -191,24 +215,24 @@ async function getReports(req, res) {
         const userId = mongoose.Types.ObjectId(res.locals.data._id),
             reports = await Report.find({
                 $or: [
-                    {accuser_id: userId},
-                    {accused_id: userId}
+                    { accuser_id: userId },
+                    { accused_id: userId }
                 ],
             }).populate(
-            [
-                {
-                    path: 'accuser_id accused_id',
-                    select: 'username'
-                },
-                {
-                    path: 'status_id',
-                    select: 'name'
-                },
-                {
-                    path: 'book_id',
-                    select: 'title'
-                }
-            ]).select('accuser_id accused_id status_id book_id start_date problem')
+                [
+                    {
+                        path: 'accuser_id accused_id',
+                        select: 'username'
+                    },
+                    {
+                        path: 'status_id',
+                        select: 'name'
+                    },
+                    {
+                        path: 'book_id',
+                        select: 'title'
+                    }
+                ]).select('accuser_id accused_id status_id book_id start_date problem')
 
         return handleResponse.response(res, 200, reports)
     } catch (error) {
@@ -258,6 +282,83 @@ async function getLocation(req, res) {
     }
 }
 
+async function updatePicture(req, res) {
+    try {
+        const { filename, pathPicture } = res.locals.data
+        await uploadFile({
+            Bucket: process.env.BUCKET_NAME,
+            Key: `images/pictures/${filename}.png`,
+            Body: fs.readFileSync(pathPicture),
+            ContentType: 'image/png'
+        })
+
+        await User.updateOne({ _id: mongoose.Types.ObjectId(res.locals.data._id) }, { filename })
+        return handleResponse.response(res, 200, filename, 'Tú foto de perfil ha sido actualizada.')
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+async function updateUsername(req, res) {
+    try {
+        const username = res.locals.data.username
+        console.log(res.locals, username)
+        await User.updateOne({ _id: mongoose.Types.ObjectId(res.locals.data._id) }, { username })
+        return handleResponse.response(res, 200, username, 'Tú nombre de usuario ha sido actualizado.')
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+async function getChats(req, res) {
+    try {
+        const _id = mongoose.Types.ObjectId(res.locals.data._id)
+        chats = await Chat.find({
+            $or: [
+                {user_1_id: _id},
+                {user_2_id: _id}
+            ]
+        }).populate('user_1_id user_2_id', 'filename username').select('user_1_id user_2_id')
+
+        return handleResponse.response(res, 200, chats, 'Chats obtenidos exitosamente')
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+async function getMessagesFromChat(req, res) {
+    try {
+        const chat_id = mongoose.Types.ObjectId(req.params.chat),
+        messages = await Message.find({
+            chat_id
+        })
+
+        return handleResponse.response(res, 200, messages, 'Mensajes obtenidos exitosamente')
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+async function getBooksNoEbooks(req, res) {
+    try {
+        const _id = res.locals.data._id,
+            books = await Book.find({
+                user_id: _id,
+                format_id: { $in: [mongoose.Types.ObjectId('5ecec9791ba037668c2fc64e')] },
+                "borrowed.1": false
+            })
+
+        return handleResponse.response(res, 200, books, 'Tus libros disponibles son los siguientes')
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
 module.exports = {
     createRecord,
     breakFreeBook,
@@ -268,5 +369,10 @@ module.exports = {
     borrowedBooks,
     getReports,
     updateLocation,
-    getLocation
+    getLocation,
+    updatePicture,
+    updateUsername,
+    getChats,
+    getMessagesFromChat,
+    getBooksNoEbooks
 }

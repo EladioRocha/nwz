@@ -6,7 +6,9 @@ const path = require('path'),
     pdf2png = require('pdf2png-mp'),
     hummus = require('hummus'),
     streams = require('memory-streams'),
-    PDFRStreamForBuffer = require(path.join(__dirname, '..', '..', 'helpers', 'PDFRStreamForBuffer'))
+    pngToJpeg = require('png-to-jpeg'),
+    AWS = require('aws-sdk'),
+    PDFRStreamForBuffer = require(path.join(__dirname, '..', '..', 'helpers', 'PDFRStreamForBuffer')),
     Genre = require(path.join(__dirname, '..', '..', 'models', 'Genres')),
     Language = require(path.join(__dirname, '..', '..', 'models', 'Languages')),
     Format = require(path.join(__dirname, '..', '..', 'models', 'Formats')),
@@ -18,7 +20,6 @@ async function validDataBook(req, res, next) {
     try {
         const genre = req.body.genre.trim(' '),
             language = req.body.language.trim(' '),
-            formats = req.body.format.map(str => str.trim(' ')),
             author = req.body.author.trim(' '),
             title = req.body.title.trim(' '),
             numPages = req.body.numPages,
@@ -50,7 +51,6 @@ async function validDataBook(req, res, next) {
 
         const genreDB = await Genre.findOne({ _id: mongoose.Types.ObjectId(genre) }).select('name'),
             languageDB = await Language.findOne({ _id: mongoose.Types.ObjectId(language) }).select('name'),
-            formatsDB = await Format.find({}).select('name'),
             authorDB = await Author.findOneAndUpdate(
                 { name: author },
                 { $setOnInsert: { name: author } },
@@ -63,14 +63,10 @@ async function validDataBook(req, res, next) {
         if (!languageDB) {
             return handleResponse.response(res, 400, null, 'El idioma ingresado es invalido.')
         }
-        if (!isValidFormat(formats, formatsDB)) {
-            return handleResponse.response(res, 400, null, 'Formato ingresado invalido.')
-        }
 
         res.locals.data = {
             genre_id: mongoose.Types.ObjectId(genreDB._id),
             language_id: mongoose.Types.ObjectId(languageDB._id),
-            format_id: formats.pop(),
             author_id: mongoose.Types.ObjectId(authorDB._id),
             user_id: mongoose.Types.ObjectId(userId),
             title,
@@ -79,6 +75,25 @@ async function validDataBook(req, res, next) {
             summary
         }
 
+
+        next()
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+async function validFormatsBook(req, res, next) {
+    try {
+        const formats = req.body.format.map(str => str.trim(' ')),
+            formatsDB = await Format.find({}).select('name');
+
+        if (!isValidFormat(formats, formatsDB)) {
+            return handleResponse.response(res, 400, null, 'Formato ingresado invalido.')
+        }
+
+        res.locals.data.format_id = formats.pop()
+        console.log('jsdfnaksndajsdkasdnajksdsad')
         next()
     } catch (error) {
         console.log(error)
@@ -152,11 +167,16 @@ async function validQualificationBook(req, res, next) {
 
 async function isValidPdf(req, res, next) {
     try {
+        if(req.body.book.split(':')[1].split('/').shift() === 'image') {
+            res.locals.book = {}
+            return next()
+        }
+
         const fileBuffer = decodeBase64File(res, req.body.book),
             filename = moment().unix();
             pathPDF = path.join(__dirname, '..', '..', 'temp', 'books', 'pdf', `${filename}.pdf`)
             pathCoverPDF = path.join(__dirname, '..', '..', 'temp', 'books', 'pdf', 'covers', `${filename}.pdf`)
-        await fs.writeFileSync(pathPDF, fileBuffer.data)
+        fs.writeFileSync(pathPDF, fileBuffer.data)
         
         try {
             let firstPageBuffer = getFirstPagePDF(fs.readFileSync(pathPDF));
@@ -169,6 +189,7 @@ async function isValidPdf(req, res, next) {
                 pdfCover: pathCoverPDF,
                 filename
             }
+            req.body.book = base64_encode(pathImg)
             next()
         } catch (error) {
             console.log(error)
@@ -179,6 +200,44 @@ async function isValidPdf(req, res, next) {
         console.log(error)
         return handleResponse.response(res, 500, null)
     }
+}
+
+async function isValidImage(req, res, next) {
+    try {
+        if(!res.locals.noImage && req.body.book.split(':')[1].split('/').shift() === 'image') {
+            const filename = moment().unix(),
+                pathCoverBook = path.join(__dirname, '..', '..', 'temp', 'images', `${filename}.jpeg`);
+            try {
+                res.locals.data.filename = filename
+                res.locals.book.img = pathCoverBook
+                res.locals.book.filename = filename
+ 
+                
+                pngToJpeg({quality: 75})(new Buffer(req.body.book.split(',')[1], 'base64')).then(out => {
+                    fs.writeFileSync(pathCoverBook, out)
+                    next()
+                })
+
+                
+            } catch (error) {
+                console.log(error)
+                return handleResponse.response(res, 400, null, 'El tipo de archivo no es valido.') 
+            }
+        } else {
+            res.locals.data.filename = req.body.book
+            next()
+        }
+
+
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+function base64_encode(file) {
+    const bitmap = fs.readFileSync(file);
+    return 'data:image/png;base64,'+new Buffer(bitmap).toString('base64');
 }
 
 function decodeBase64File(res, dataString) {
@@ -247,9 +306,23 @@ function getFirstPagePDF (buffer) {
     return outStream.toBuffer();
 }
 
+function getImage(req, res, next) {
+    try {
+        res.locals.book = {}
+        res.locals.noImage = (req.body.book.length < 30) ? true : false
+        next()
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
 module.exports = {
     validDataBook,
     validQualificationBook,
     isValidPdf,
     userHasBook,
+    isValidImage,
+    validFormatsBook,
+    getImage
 }

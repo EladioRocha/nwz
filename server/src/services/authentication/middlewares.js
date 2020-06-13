@@ -51,21 +51,11 @@ function register(req, res, next) {
 
 async function existUser(req, res, next) {
     try {
-        const email = validator.escape(validator.normalizeEmail(req.body.email.trim(' '))),
-            username = validator.escape(req.body.username.trim(' ')).toLowerCase();
-        let user = await User.findOne({
-            $or: [
-                { email },
-                { username }
-            ]
-        })
-
-        if (user) {
-            if (user.username === username) {
-                return handleResponse.response(res, 400, null, 'El nombre de usuario ingresado ya ha sido registrado anteriormente.')
-            } else if (user.email === email) {
-                return handleResponse.response(res, 400, null, 'El correo electronico ingresado ya ha sido registrado anteriormente.')
-            }
+        const username = res.locals.data.username
+        let user = await User.findOne({ username }).select('username')
+        
+        if (user && user.username === username) {
+            return handleResponse.response(res, 400, null, 'El nombre de usuario ingresado ya ha sido registrado anteriormente.')
         }
 
         next()
@@ -75,9 +65,18 @@ async function existUser(req, res, next) {
     }
 }
 
+async function existEmail() {
+    const email = res.locals.data.email
+    let user = await User.findOne({ email }).select('email')
+    if (user.email === email) {
+        return handleResponse.response(res, 400, null, 'El correo ingresado ya ha sido registrado anteriormente.')
+    }
+
+    next()
+}
+
 async function login(req, res, next) {
     try {
-        console.log(req.body)
         const email = validator.escape(req.body.email).toLowerCase(),
             password = req.body.password;
 
@@ -146,5 +145,6 @@ module.exports = {
     register,
     login,
     existUser,
-    validToken
+    validToken,
+    existEmail
 }

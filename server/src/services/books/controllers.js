@@ -3,6 +3,8 @@ const path = require('path'),
     fs = require('fs'),
     moment = require('moment-timezone'),
     Book = require(path.join(__dirname, '..', '..', 'models', 'Books')),
+    Record = require(path.join(__dirname, '..', '..', 'models', 'Records')),
+    Author = require(path.join(__dirname, '..', '..', 'models', 'Authors')),
     handleResponse = require(path.join(__dirname, '..', '..', 'helpers', 'handleResponse')),
     uploadFile = require(path.join(__dirname, '..', '..', 'helpers', 'uploadFileToAWS'));
 
@@ -30,7 +32,6 @@ async function getBooks(req, res) {
 
         const book = data.docs;
         book.push({ totalPages: data.totalPages, page: data.page })
-        console.log(book)
         return handleResponse.response(res, 200, book)
     } catch (error) {
         console.log(error)
@@ -99,8 +100,8 @@ async function getBook(req, res) {
                     'isbn': 1,
                     'number_pages': 1,
                     'summary': 1,
-                    'borrowed': 1,
                     'filename': 1,
+                    'borrowed': 1,
                     'author_id._id': 1,
                     'author_id.name': 1,
                     'format_id._id': 1,
@@ -148,30 +149,35 @@ async function uploadFilesToAWS(req, res) {
             { filename } = res.locals.book
             data = {
                 key: [
-                    'books/pdf',
-                    'images/covers'
+                    (res.locals.book.pdf) ? 'books/pdf' : undefined,
+                    (res.locals.book.img) ? 'images/covers' : undefined
                 ],
-                body: [
-                    res.locals.book.pdf,
-                    res.locals.book.img
+                path: [
+                    (res.locals.book.pdf) ? res.locals.book.pdf : undefined,
+                    (res.locals.book.img) ? res.locals.book.img : undefined
                 ]
             },
-            extensions = ['pdf', 'png'],
-            contentType = ['application/pdf', 'image/png'];
+            extensions = [(res.locals.book.pdf) ? 'pdf' : undefined, (res.locals.book.img) ? 'png' : undefined],
+            contentType = [(res.locals.book.pdf) ? 'application/pdf' : undefined, (res.locals.book.img) ? 'image/png' : undefined];
 
+        console.log(filename, data)
         for (let [idx, key] of Object.keys(data).entries()) {
-            promises.push(uploadFile({
-                Bucket: process.env.BUCKET_NAME,
-                Key: `${data.key[idx]}/${filename}.${extensions[idx]}`,
-                Body: fs.readFileSync(data.body[idx]),
-                ContentType: contentType[idx]
-            }))
+            if(data.key[idx] !== undefined) {
+                promises.push(uploadFile({
+                    Bucket: process.env.BUCKET_NAME,
+                    Key: `${data.key[idx]}/${filename}.${extensions[idx]}`,
+                    Body: fs.readFileSync(data.path[idx]),
+                    ContentType: contentType[idx]
+                }))
+            }
         }
 
         await Promise.all(promises)
 
-        data.body.push(res.locals.book.pdfCover)
-        deleteFiles(data.body)
+        if(res.locals.book.pdfCover) {
+            data.path.push(res.locals.book.pdfCover)
+        }
+        deleteFiles(data.path)
 
         return handleResponse.response(res, 200, res.locals.data, 'El libro se ha guardado correctamente.')
     } catch (error) {
@@ -207,10 +213,12 @@ async function updateRankBook(req, res) {
 
 function deleteFiles(files) {
     for (let file of files) {
-        try {
-            fs.unlinkSync(file)
-        } catch (error) {
-            console.log(error)
+        if(file !== undefined) {
+            try {
+                fs.unlinkSync(file)
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
 }
@@ -303,9 +311,77 @@ async function getResultOfSearch(req, res) {
 
         const book = data.docs;
         book.push({ totalPages: data.totalPages, page: data.page })
-        console.log(book)
         return handleResponse.response(res, 200, book)
 
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+async function deleteBook(req, res) {
+    try {
+        const _id = mongoose.Types.ObjectId(req.query.book)
+
+        await Book.deleteOne({_id})
+
+        return handleResponse.response(res, 200, null, 'El libro ha sido borrado con exito.')
+
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+async function updateBook(req, res) {
+    try {
+        const _id = mongoose.Types.ObjectId(req.body._id),
+            title = res.locals.data.title,
+            author_id = res.locals.data.author_id,
+            isbn = res.locals.data.isbn,
+            summary = res.locals.data.summary,
+            number_pages = res.locals.data.number_pages,
+            language_id = res.locals.data.language_id,
+            genre_id = res.locals.data.genre_id,
+            filename = res.locals.data.filename;
+        
+        await Book.updateOne(
+            { _id },
+            {
+                title,
+                author_id,
+                isbn,
+                summary,
+                number_pages,
+                language_id,
+                genre_id,
+                filename
+            })
+
+        if(!res.locals.noImage) {
+            await uploadFile({
+                Bucket: process.env.BUCKET_NAME,
+                Key: `images/covers/${filename}.png`,
+                Body: fs.readFileSync(res.locals.book.img),
+                ContentType: 'image/png'
+            })
+        }
+        return handleResponse.response(res, 200, null, 'El libro ha sido actualizado con exito.')
+
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+async function getAuthors(req, res) {
+    try {
+        const author = req.query.author,
+            name = new RegExp(`${author}.*`, 'si')
+            authors = await Author.find({name});
+
+        console.log(name)
+        return handleResponse.response(res, 200, authors, 'Los autores más destacados.')
     } catch (error) {
         console.log(error)
         return handleResponse.response(res, 500, null)
@@ -321,4 +397,7 @@ module.exports = {
     getUrlBook,
     getRank,
     getResultOfSearch,
+    deleteBook,
+    updateBook,
+    getAuthors
 }

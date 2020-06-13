@@ -2,6 +2,8 @@ const path = require('path'),
     validator = require('validator'),
     mongoose = require('mongoose'),
     moment = require('moment-timezone'),
+    pngToJpeg = require('png-to-jpeg'),
+    fs = require('fs'),
     Book = require(path.join(__dirname, '..', '..', 'models', 'Books')),
     User = require(path.join(__dirname, '..', '..', 'models', 'Users')),
     Record = require(path.join(__dirname, '..', '..', 'models', 'Records')),
@@ -9,8 +11,9 @@ const path = require('path'),
 
 async function validBook(req, res, next) {
     try {
-        const bookId = req.body.book;
-
+        const bookId = req.body.book,
+            formatType = req.body.formatType;
+        console.log(bookId)
         if(!validator.isMongoId(bookId)) {
             return handleResponse.response(res, 400, null, 'El libro seleccionado es invalido.')
         } else {
@@ -21,6 +24,7 @@ async function validBook(req, res, next) {
             res.locals.data.book = bookId
             res.locals.data.userId = book.user_id
             res.locals.data.borrowed = book.borrowed
+            res.locals.data.formatType = formatType
         }
         
         next()
@@ -31,15 +35,19 @@ async function validBook(req, res, next) {
 }
 
 function borrowedBook(req, res, next) {
-    if(res.locals.data.borrowed) {
+    if(res.locals.data.formatType === 'ebook' && res.locals.data.borrowed[0] === true) {
         return handleResponse.response(res, 400, null, 'El libro seleccionado ya se encuentra en prestamo por otro usuario.')
+    }
+    if(res.locals.data.formatType === 'book' && res.locals.data.borrowed[1] === true) {
+        return handleResponse.response(res, 400, null, 'El libro ya esta en prestamo, no puedes volver a prestarlo hasta que te lo devuelvan.')
     }
 
     next()
 }
 
 function isFree(req, res, next) {
-    if(!res.locals.data.borrowed) {
+    console.log(res.locals.data)
+    if(res.locals.data.formatType === 'ebook' && res.locals.data.borrowed[0] === false) {
         return handleResponse.response(res, 400, null, 'El libro no esta disponible en estos momentos.')
     }
 
@@ -158,6 +166,46 @@ async function isValidReport(req, res, next) {
     }
 }
 
+async function isValidImg(req, res, next) {
+    try {
+        if(req.body.image.split(':')[1].split('/').shift() === 'image') {
+            const filename = moment().unix(),
+                pathPicture = path.join(__dirname, '..', '..', 'temp', 'images', 'pictures', `${filename}.jpeg`);
+            try {
+                res.locals.data.filename = filename
+                res.locals.data.pathPicture = pathPicture
+                pngToJpeg({quality: 75})(new Buffer(req.body.image.split(',')[1], 'base64')).then(out => {
+                    fs.writeFileSync(pathPicture, out)
+                    next()
+                })
+            } catch (error) {
+                console.log(error)
+                return handleResponse.response(res, 400, null, 'El tipo de archivo no es valido.') 
+            }
+        } 
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
+async function isValidUsername(req, res, next) {
+    try {
+        const username = validator.escape(req.body.username.trim(' ')),
+            optionsLengthUser = { min: 2 };
+
+        if (!validator.isLength(username, optionsLengthUser)) {
+            return handleResponse.response(res, 400, null, 'El nombre de usuario debe contener 2 caracteres o más.')
+        }
+
+        res.locals.data.username = username
+        next()
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
 
 module.exports = {
     validBook,
@@ -167,5 +215,7 @@ module.exports = {
     isDifferentUser,
     isValidAccuser,
     isValidAccused,
-    isValidReport
+    isValidReport,
+    isValidImg,
+    isValidUsername,
 }
