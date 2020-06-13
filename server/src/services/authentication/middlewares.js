@@ -51,6 +51,7 @@ function register(req, res, next) {
 
 async function existUser(req, res, next) {
     try {
+        console.log(res.locals.data)
         const username = res.locals.data.username
         let user = await User.findOne({ username }).select('username')
         

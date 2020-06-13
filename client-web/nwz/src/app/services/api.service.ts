@@ -15,7 +15,7 @@ export class ApiService {
     private _http: HttpClient,
     private _cookieService: CookieService
   ) { 
-    this.API_URL = 'http://localhost:3000/api/v1'  
+    this.API_URL = 'https://nwz.herokuapp.com/api/v1'  
   }
 
   /** ==================== AUTHENTICATION ==================== **/
