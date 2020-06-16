@@ -18,6 +18,7 @@ export class ProfileSidenavComponent {
     this._cookieService.delete('token', '/libros')
     this._cookieService.delete('token', '/')
     this._toastr.success('La sesión ha sido terminada.', 'Sesión terminada')
+    this._user.user = null
     this._router.navigate(['/libros'])
   }
 

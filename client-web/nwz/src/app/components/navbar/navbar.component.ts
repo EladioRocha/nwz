@@ -75,7 +75,6 @@ export class NavbarComponent implements OnInit {
       this._toastr.warning(response.message, 'Inicio de sesion fallido.')
     } else {
       this._toastr.error(response.message, 'Algo ha salido mal.')
-
     }
   }
 
@@ -91,8 +90,16 @@ export class NavbarComponent implements OnInit {
   }
 
   registerResponse(response) {
+    const status = response.status
+    if(status === 200) {
+      this.showLoginForm = true
+      this._toastr.success(response.message, 'Registro exitoso.')
+    } else if(status === 400) {
+      this._toastr.warning(response.message, 'Registro fallido.')
+    } else {
+      this._toastr.error(response.message, 'Algo ha salido mal.')
+    }
     console.log(response)
-    this.modal = false
   }
 
   searchBooks(term) {

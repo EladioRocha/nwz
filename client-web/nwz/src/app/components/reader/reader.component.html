@@ -1,14 +1,22 @@
-<section class="py-2 px-4 flex">
-    <div class="w-full arrow-left flex justify-center">
+<section class="w-full py-2 px-4 flex flex-wrap">
+    <div class="hidden md:block w-full arrow-left flex justify-center">
         <div class="mt-64 w-16 h-16 rounded-full flex justify-center cursor-pointer bg-red-400" (click)="previousPage()">
             <p class="my-auto"><fa-icon [classes]="['text-orange-100']" [icon]="['fas', 'arrow-left']" size="lg"></fa-icon></p>
         </div>
     </div>
-    <div class="w-full pdf-content">
-        <pdf-viewer (after-load-complete)="aftearLoadPdf($event)" [(page)]="currentPage" [src]="bookURL" [render-text]="true" [show-all]="false" style="display: block;"></pdf-viewer>
+    <div class="w-full pdf-content overflow-none" style="overflow: hidden;">
+        <pdf-viewer [original-size]="false" [autoresize]="true" (after-load-complete)="aftearLoadPdf($event)" [(page)]="currentPage" [src]="bookURL" [render-text]="true" [show-all]="false" style="display: block;"></pdf-viewer>
+        <div class="flex justify-between my-2">
+            <div class="w-10 h-10 rounded-full flex justify-center cursor-pointer bg-red-400" (click)="previousPage()">
+                <p class="my-auto"><fa-icon [classes]="['text-orange-100']" [icon]="['fas', 'arrow-left']" size="lg"></fa-icon></p>
+            </div>
+            <div class="h-10 w-10 rounded-full flex justify-center cursor-pointer bg-red-400" (click)="nextPage()">
+                <p class="my-auto"><fa-icon [classes]="['text-orange-100']" [icon]="['fas', 'arrow-right']" size="lg"></fa-icon></p>
+            </div>
+        </div>
         <button (click)="returnBook('ebook')" class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none">Devolver</button>
     </div>
-    <div class="w-full arrow-right flex justify-center">
+    <div class="hidden md:block w-full arrow-right flex justify-center">
         <div class="mt-64 w-16 h-16 rounded-full flex justify-center cursor-pointer bg-red-400" (click)="nextPage()">
             <p class="my-auto"><fa-icon [classes]="['text-orange-100']" [icon]="['fas', 'arrow-right']" size="lg"></fa-icon></p>
         </div>

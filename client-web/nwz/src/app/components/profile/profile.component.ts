@@ -28,8 +28,17 @@ export class ProfileComponent implements OnInit {
   }
 
   myLocationResponse(response) {
+    
     this._user.user.location = response.data.location
-    console.log(response)
+    if(!this._user.user.location) {
+      this._user.user.location = {
+        country_id: {
+          _id: '',
+          name: ''
+        }
+      }
+    }
+    console.log(response.data.location)
   }
 
   getCountries(country) {

@@ -8,6 +8,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { ToastrService } from 'ngx-toastr';
 import { BooksService } from 'src/app/services/books.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-books',
@@ -32,14 +33,13 @@ export class BooksComponent implements OnInit {
 
   @ViewChild('app-pagination') pagination
 
-  constructor(private _api: ApiService, private _route: ActivatedRoute, private _router: Router, private _toastr: ToastrService, public books: BooksService) { 
+  constructor(public _user: UserService ,private _api: ApiService, private _route: ActivatedRoute, private _router: Router, private _toastr: ToastrService, public books: BooksService) { 
     this.modal = false
     library.add(fas, far, fab)
   }
 
   ngOnInit(): void {
     if(this.books.fromSearch) {
-      console.log('============================= FROM SEARCH', this.books.fromSearch, this.books.term)
       this._api.handleMultipleGetRequest(this._api.getAllGenres(), this._api.getRankBooks()).subscribe(response => {
         this.genresResponse(response[0])
         this.bookRanksResponse(response[1])
@@ -154,6 +154,7 @@ export class BooksComponent implements OnInit {
         }
       } catch (error) {
         console.log(error)
+        this._toastr.warning('Parece que se te ha olvidado subir un archivo valido...')
         reject('Parece que se ta ha olvidado subir un libro...')
       }
     })
@@ -170,11 +171,13 @@ export class BooksComponent implements OnInit {
             resolve(reader.result.toString().match(/\/Type[\s]*\/Page[^s]/g).length)
           } catch (error) {
             console.log(error)
+            this._toastr.warning('Parece que se te ha olvidado subir un archivo valido...')
             reject('Parece que se ta ha olvidado subir un libro...')
           }
         }
       } catch (error) {
         console.log(error)
+        this._toastr.warning('Parece que se te ha olvidado subir un archivo valido...')
         reject('Parece que se ta ha olvidado subir un libro...')
       }
     })
@@ -185,11 +188,21 @@ export class BooksComponent implements OnInit {
       return false
     } else if(response.status === 200) {
       this.existBooks = true
-      this._router.navigate(['/libros'])
       this.modal = false
       this._toastr.success(response.message, 'Libro guardado.')
     }
-
+    const status = response.status
+    if(status === 200) {
+      this.existBooks = false
+      this.books.books.push(response.data)
+      console.log('MY UPLOADEDD BOOOK', response.data)
+      this._toastr.success(response.message, 'Libro guardado.')
+    } else if(status === 400) {
+      this._toastr.warning(response.message, 'Información incorrecta.')
+    } else {
+      this._toastr.error(response.message, 'Algo ha salido mal.')
+    }
+    console.log(response)
   }
 
   getBunchOfBooks() {

@@ -1,6 +1,6 @@
-<main class="flex h-full-sub-header">
-    <article class="relative w-1/6 bg-gray-100 h-full">
-        <div class="user-chat-contact w-full bg-gray-100 h-16 flex cursor-pointer" *ngFor="let chat of chats"
+<main class="flex h-full-sub-header flex flex-wrap">
+    <article class="relative w-full md:w-1/6 bg-gray-100 h-20 md:h-full flex md:block overflow-x-auto md:overflow-none">
+        <div class="inline-block user-chat-contact w-full bg-gray-100 md:h-16 flex flex-shrink-0 md:flex-shrink cursor-pointer" *ngFor="let chat of chats"
             (click)="getMessagesFromChat(chat._id, chat.user_1_id?._id, chat.user_2_id?._id)">
             <div class="user-chat-image w-1/2 py-2 px-4">
                 <img class="w-12 h-12 rounded-full shadow-md" src="{{API_URL_BASE}}/{{ chat?.user_1_id?.filename }}.png"
@@ -13,12 +13,11 @@
                     {{ chat?.user_1_id?.username }}</p>
                 <p class="text-gray-700 cursor-none" *ngIf="chat?.user_2_id?._id !== _user.user?._id">
                     {{ chat?.user_2_id?.username }}</p>
-
             </div>
         </div>
     </article>
-    <article class="relative w-5/6 max-h-full">
-        <div class="user-chat-info w-full bg-gray-100 h-16 flex">
+    <article class="relative w-full md:w-5/6 max-h-full">
+        <div class="hidden md:block user-chat-info w-full bg-gray-100 h-16 flex">
             <div class="user-chat-image w-1/2 py-2 px-4"></div>
             <div class="user-chat-name w-1/2 my-auto relative"></div>
         </div>
@@ -38,7 +37,7 @@
                     id="write-message" type="text" placeholder="Escribe tu mensaje" autocomplete="off"
                     (keyup.enter)="sendMessage($event.target, $event.target.value)">
             </div>
-            <div class="user-chat-send py-2 px-4">
+            <div class="user-chat-send py-2 px-4 my-auto">
                 <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none"
                     (click)="showModal()">Liberar</button>
             </div>

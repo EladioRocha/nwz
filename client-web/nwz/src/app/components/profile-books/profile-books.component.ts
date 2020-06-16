@@ -21,6 +21,7 @@ export class ProfileBooksComponent implements OnInit {
   public keyword: string = 'name'
   public data: any[]
   private _currentAuthor: string
+  
 
   constructor(private _api: ApiService, private _toastr: ToastrService) {
     library.add(fas, far, fab)
@@ -86,14 +87,16 @@ export class ProfileBooksComponent implements OnInit {
   }
 
   async updateBook(_id) {
+    console.log(this._currentAuthor)
     const title: string = (document.querySelector('#book-title') as HTMLInputElement).value,
-      author: string = this._currentAuthor,
+      author: string = (!this._currentAuthor) ? this.singleBook.author_id.name : this._currentAuthor,
       isbn: string = (document.querySelector('#book-isbn') as HTMLInputElement).value,
       summary: string = (document.querySelector('#book-summary') as HTMLInputElement).value,
       genre: string = (document.querySelector('#book-genre') as HTMLInputElement).value,
       language: string = (document.querySelector('#book-language') as HTMLInputElement).value,
       numPages = (document.querySelector('#book-number-pages') as HTMLInputElement).value,
       file = (document.querySelector('#book-file') as HTMLInputElement).files[0];
+    
     let image
     image = (!file) ? this.singleBook.filename : await this.getBase64File(file)
     this._api.updateBook(title, author, isbn, numPages, summary, genre, language, image, _id).subscribe(response => this.updateBookResponse(response))
@@ -105,6 +108,7 @@ export class ProfileBooksComponent implements OnInit {
     if (status === 200) {
       this.modal = false
       this._toastr.success(response.message)
+      this._api.getMyBooksUploaded().subscribe(response => this.getMyBooksUploadedResponse(response))
       console.log(response)
     } else if (status === 400) {
       this._toastr.warning(response.message)

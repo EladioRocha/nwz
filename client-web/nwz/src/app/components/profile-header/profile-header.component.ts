@@ -68,6 +68,7 @@ export class ProfileHeaderComponent {
     } else {
       this._toastr.error(response.message, 'Algo ha fallado')
     }
+    console.log('MYYY UPDATE RESPONSE', response)
   }
 
   getBase64File(file): unknown {

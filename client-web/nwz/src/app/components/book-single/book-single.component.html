@@ -5,12 +5,12 @@
       <!-- <app-categories class="w-1/5 px-4"></app-categories> -->
       <div class="w-full books flex flex-wrap">
         <div class="w-full book-info flex flex-wrap">
-          <h1 class="w-full text-3xl text-gray-700 font-bold">{{ book?.title }}</h1>
-          <div class="book-image w-1/4">
-            <div class="image pr-4">
+          <h1 class="w-full text-2xl md:text-3xl text-gray-700 font-bold mb-2">{{ book?.title }}</h1>
+          <div class="book-image w-full md:w-1/4">
+            <div class="image md:pr-4">
               <img class="w-full" src="{{ bookSingle.picture }}" alt="Image">
             </div>
-            <div class="book-options pr-4 flex mt-2">
+            <div class="book-options md:pr-4 flex mt-2">
               <div class="w-full" *ngIf="!hasPdf && hasBook && !bookBorrowed">
                 <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(false)" id="request-book" >Solicitar fisico</button>
               </div>
@@ -26,13 +26,10 @@
                 <button class="w-1/2 bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(false)" id="request-book" >Solicitar fisico</button>
               </div>
               <div class="w-full flex" *ngIf="hasPdf && hasBook && !pdfBorrowed && bookBorrowed">
-                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none mr-2" (click)="showModal(true)" id="request-ebook">Solicitar PDF</button>
+                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="showModal(true)" id="request-ebook">Solicitar PDF</button>
               </div>
               <div class="w-full flex" *ngIf="hasPdf && !hasBook && pdfBorrowed">
-                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none mr-2" [routerLink]="['/libros/lectura', bookSingle.book]">Ir a leer</button>
-              </div>
-              <div class="w-full flex" *ngIf="!hasPdf && hasBook && bookBorrowed">
-                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none mr-2" [routerLink]="['/libros/lectura', bookSingle.book]">Devolver</button>
+                <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" [routerLink]="['/libros/lectura', bookSingle.book]">Ir a leer</button>
               </div>
               <!-- <div class="w-full flex" *ngIf="hasPdf && hasBook && !pdfBorrowed && bookBorrowed">
                 <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none mr-2" (click)="showModal(true)" id="request-ebook">Solicitar PDF</button>
@@ -42,14 +39,14 @@
               </div> -->
             </div>
           </div>
-          <div class="book-info w-3/4">
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Autor: </span>{{ book?.author_id.name}}</p>
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Género: </span>{{ book?.genre_id.name }}</p>
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Número de páginas: </span>{{ book?.number_pages }}</p>
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Idioma: </span>{{ book?.language_id.name }}</p>
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Disponibilidad: </span>{{ book?.format_id | bookFormat }}</p>
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">ISBN: </span>{{ book?.isbn }}</p>
-            <p class="font-semibold text-gray-700 text-lg py-2 w-auto"><span class="font-bold">Resumen: </span>{{ book?.summary }}</p>
+          <div class="book-info w-full md:w-3/4">
+            <p class="font-semibold text-gray-700 md:text-lg py-2 w-auto"><span class="font-bold">Autor: </span>{{ book?.author_id.name}}</p>
+            <p class="font-semibold text-gray-700 md:text-lg py-2 w-auto"><span class="font-bold">Género: </span>{{ book?.genre_id.name }}</p>
+            <p class="font-semibold text-gray-700 md:text-lg py-2 w-auto"><span class="font-bold">Número de páginas: </span>{{ book?.number_pages }}</p>
+            <p class="font-semibold text-gray-700 md:text-lg py-2 w-auto"><span class="font-bold">Idioma: </span>{{ book?.language_id.name }}</p>
+            <p class="font-semibold text-gray-700 md:text-lg py-2 w-auto"><span class="font-bold">Disponibilidad: </span>{{ book?.format_id | bookFormat }}</p>
+            <p class="font-semibold text-gray-700 md:text-lg py-2 w-auto"><span class="font-bold">ISBN: </span>{{ book?.isbn }}</p>
+            <p class="font-semibold text-gray-700 md:text-lg py-2 w-auto"><span class="font-bold">Resumen: </span>{{ book?.summary }}</p>
             <div class="w-full">
               <a class="text-4xl cursor-pointer text-red-400" (click)="updateRank(1)"><fa-icon [icon]="book?.rank | bookRank: 1" size="md"></fa-icon></a>
               <a class="text-4xl cursor-pointer text-red-400" (click)="updateRank(2)"><fa-icon [icon]="book?.rank | bookRank: 2" size="md"></fa-icon></a>
@@ -90,4 +87,3 @@
   <button class="mr-2 footer bg-red-400 w-full text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="sendMessage()" *ngIf="!requestDigital">¡Si, lo quiero!</button>
   <!-- END BOOK -->
 </app-modal>
-<app-footer></app-footer>

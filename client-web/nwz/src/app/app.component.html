@@ -1,2 +1,34 @@
 <app-navbar></app-navbar>
+<div class="searcher fixed w-full" *ngIf="searcher">
+	<input
+		class="bg-gray-100 shadow appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+		id="searcher" type="text" placeholder="Buscar libro por título" autocomplete="off" (keyup.enter)="searchBooks($event.target.value)"
+		>
+</div>
+<div class="block md:hidden">
+	<!-- <section id="bottom-navigation" class="md:hidden block fixed inset-x-0 bottom-0 z-10 bg-white shadow"> // if shown only tablet/mobile-->
+	<section id="bottom-navigation" class="block fixed inset-x-0 bottom-0 z-10 bg-red-400 shadow">
+		<div id="tabs" class="flex justify-between">
+			<a routerLink="/libros"
+				class="w-full focus:text-teal-500 hover:text-teal-500 justify-center inline-block text-center pt-2 pb-1">
+				<fa-icon [icon]="['fas', 'home']" size="lg" [classes]="['text-gray-100', 'cursor-pointer']"></fa-icon>
+			</a>
+			<a (click)="showSearcher()" class="w-full focus:text-teal-500 hover:text-teal-500 justify-center inline-block text-center pt-2 pb-1">
+				<fa-icon [icon]="['fas', 'search']" size="lg" [classes]="['text-gray-100', 'cursor-pointer']"></fa-icon>
+			</a>
+			<a routerLink="/perfil"
+				class="w-full focus:text-teal-500 hover:text-teal-500 justify-center inline-block text-center pt-2 pb-1">
+				<fa-icon [icon]="['fas', 'user']" size="lg" [classes]="['text-gray-100', 'cursor-pointer']"></fa-icon>
+			</a>
+			<a routerLink="/usuarios/chat"
+				class="w-full focus:text-teal-500 hover:text-teal-500 justify-center inline-block text-center pt-2 pb-1">
+				<fa-icon [icon]="['fas', 'comment']" size="lg" [classes]="['text-gray-100', 'cursor-pointer']">
+				</fa-icon>
+			</a>
+		</div>
+	</section>
+</div>
+
 <router-outlet></router-outlet>
+<div class="h-12">
+</div>

@@ -1,10 +1,10 @@
 <article class="mt-5">
   <div class="container mx-auto">
     <div class="mb-2">
-      <h2 class="mx-auto text-3xl text-gray-700 px-4 font-semibold">Top 5 libros</h2>
+      <h2 class="mx-auto text-2xl md:text-3xl text-gray-700 px-4 font-semibold">Top 5 libros</h2>
     </div>
     <div class="recent-books flex mx-auto">
-      <app-book-card class="w-1/5 px-4" *ngFor="let book of booksRank" [title]="book._id.title" [filename]="book._id.filename" [_id]="book._id._id" [hasGenre]="false" [hasBorrowed]="false"></app-book-card>
+      <app-book-card class="w-full md:w-1/3 lg:w-1/4 px-4" *ngFor="let book of booksRank" [title]="book._id.title" [filename]="book._id.filename" [_id]="book._id._id" [hasGenre]="false" [hasBorrowed]="false"></app-book-card>
       <!-- <app-book-card class="w-1/5 px-4"></app-book-card>
       <app-book-card class="w-1/5 px-4"></app-book-card>
       <app-book-card class="w-1/5 px-4"></app-book-card>

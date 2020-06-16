@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { ApiService } from 'src/app/services/api.service';
 import { Book } from '../../common/interfaces'
 import { BookSingleService } from 'src/app/services/book-single.service';
@@ -23,8 +23,9 @@ export class BookSingleComponent implements OnInit {
   public hasPdf: boolean = true
   public bookBorrowed: boolean
   public pdfBorrowed: boolean
+  private myQualification: number
 
-  constructor(private _route: ActivatedRoute, private _api: ApiService, public bookSingle: BookSingleService, private _toastr: ToastrService) {
+  constructor(private _router: Router, private _route: ActivatedRoute, private _api: ApiService, public bookSingle: BookSingleService, private _toastr: ToastrService) {
     this.days = [1, 2, 3, 4, 5, 6, 7]
     library.add(fas, far, fab)
   }
@@ -43,7 +44,6 @@ export class BookSingleComponent implements OnInit {
       this.hasPdf = this.book.format_id.findIndex(el => el.name === 'PDF') >= 0
       this.pdfBorrowed = this.book.borrowed[0]
       this.bookBorrowed = this.book.borrowed[1]
-      console.log('BOOOORRROW', this.book.borrowed)
       this.bookSingle.book = this.book._id
       this.bookSingle.rank = this.book.rank
       this.bookSingle.picture = `${this.bookSingle.API_URL_BASE}/${this.book.filename}.png`
@@ -51,15 +51,20 @@ export class BookSingleComponent implements OnInit {
   }
 
   updateRank(qualification: number) {
+    this.myQualification = qualification
     this._api.updateRank(qualification, this.bookSingle.book).subscribe(response => this.rankResponse(response))
   }
 
   rankResponse(response) {
-    if(response.status !== 200) {
-      return false
-    } else if (response.status === 200) {
+    const status = response.status
+    if(status === 200) {
       this._toastr.success(response.message, 'Calificación guardada.')
+    } else if(status === 400) {
+      this._toastr.warning(response.message)
+    } else {
+      this._toastr.error(response.message, 'Algo ha salido mal.')
     }
+    console.log(response)
   }
   
   showModal(requestDigital: boolean) {
@@ -80,12 +85,18 @@ export class BookSingleComponent implements OnInit {
   }
 
   requestBookResponse(response) {
-    console.log(response)
-    if(response.status !== 200) {
-      return false
-    } else if(response.status === 200) {
-      this._toastr.success(response.message, 'Libro elegido')
+    const status = response.status
+    if(status === 200) {
+      this.pdfBorrowed = true
+      this.modal = false
+      this._router.navigate(['/libros/lectura', this.book._id])
+      this._toastr.success(response.message)
+    } else if(status === 400) {
+      this._toastr.warning(response.message)
+    } else {
+      this._toastr.error(response.message, 'Algo ha salido mal.')
     }
+    console.log(response)
   }
 
   sendMessage() {
