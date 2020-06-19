@@ -3,7 +3,7 @@ const path = require('path'),
     mongoose = require('mongoose'),
     fs = require('fs'),
     moment = require('moment-timezone'),
-    pdf2png = require('pdf2png-mp'),
+    pdf2png = require('pdf2png-mp2'),
     hummus = require('hummus'),
     streams = require('memory-streams'),
     pngToJpeg = require('png-to-jpeg'),
@@ -31,6 +31,7 @@ async function validDataBook(req, res, next) {
             optionsLenghtSummary = { min: 10, max: 1000 };
         let isbn = req.body.isbn.trim(' ')
 
+
         if (!validator.isLength(title, optionsLenghtTitle)) {
             return handleResponse.response(res, 400, null, 'El título es muy corto.')
         }
@@ -43,8 +44,10 @@ async function validDataBook(req, res, next) {
             return handleResponse.response(res, 400, null, 'El número de página ingresado es invalido.')
         }
         if (!validator.isLength(summary, optionsLenghtSummary)) {
+            console.log('ENTRO AQUIIIII XD')
             return handleResponse.response(res, 400, null, 'El resumen ingresado es invalido.')
         }
+        console.log('PASOADAPSDOAPOSD')
         if (!validator.isLength(author, optionsLengthAuthor)) {
             return handleResponse.response(res, 400, null, 'El nombre del autor ingresado es muy corto.')
         }

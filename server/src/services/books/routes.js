@@ -14,6 +14,7 @@ router.get('/:_id', controller.getBook)
 router.post('/', [middlewareAuth.validToken, middleware.validDataBook, middleware.validFormatsBook, middleware.isValidPdf, middleware.isValidImage], [controller.saveBook, controller.uploadFilesToAWS])
 
 router.put('/', [middlewareAuth.validToken, middleware.validDataBook, middleware.getImage, middleware.isValidImage], controller.updateBook)
+router.put('/page', [middlewareAuth.validToken], controller.updatePage)
 router.put('/rank', [middlewareAuth.validToken, middleware.validQualificationBook], controller.updateRankBook)
 
 router.delete('/', [middlewareAuth.validToken], controller.deleteBook)

@@ -1,0 +1,33 @@
+<app-profile-header></app-profile-header>
+<section class="mt-2">
+  <div class="container mx-auto">
+    <div class="flex">
+      <app-profile-sidenav class="hidden md:block md:w-1/4 px-4"></app-profile-sidenav>
+      <div class="history-data md:w-3/4 flex flex-wrap">
+        <h2 class="w-full text-2xl md:text-3xl font-semibold text-gray-700 py-2 px-4" (dblclick)="test()">Reportes</h2>
+        <div class="w-full table-books">
+          <table class="table-auto text-gray-700">
+            <thead>
+              <tr>
+                <th class="px-4">Libro</th>
+                <th class="px-4">Infractor</th>
+                <th class="px-4">Fecha de reporte</th>
+                <th class="px-4">Razón</th>
+                <th class="px-4">Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let report of reports">
+                <td class="px-4"><a [routerLink]="['/libros', report?.book_id?._id]" *ngIf="report?.book_id?._id">{{ report?.book_id?.title }}</a></td>
+                <td class="px-4"><a routerLink="/usuarios/chat">{{ report?.accused_id.username }}</a></td>
+                <td class="px-4">{{ report?.start_date | date: 'dd/MM/yyyy' }}</td>
+                <td class="px-4">{{ report?.problem }}</td>
+                <td class="px-4">{{ report?.status_id.name }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

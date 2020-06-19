@@ -1,0 +1,10 @@
+.book-image {
+    position: relative;
+}
+
+.book-state {
+    position: absolute;
+    top: 0;
+    z-index: 999;
+    width: 100%;
+}

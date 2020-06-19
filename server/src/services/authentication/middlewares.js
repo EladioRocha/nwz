@@ -66,10 +66,10 @@ async function existUser(req, res, next) {
     }
 }
 
-async function existEmail() {
+async function existEmail(req, res, next) {
     const email = res.locals.data.email
     let user = await User.findOne({ email }).select('email')
-    if (user.email === email) {
+    if (user && user.email === email) {
         return handleResponse.response(res, 400, null, 'El correo ingresado ya ha sido registrado anteriormente.')
     }
 

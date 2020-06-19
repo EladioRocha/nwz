@@ -225,12 +225,11 @@ function deleteFiles(files) {
 
 async function getUrlBook(req, res) {
     try {
-        const data = await Book.findOne({
-            _id: res.locals.data.book
-        }).select('filename')
+        const data = await Record.findOne({
+            book_id: res.locals.data.book
+        }).populate('book_id', 'filename').select('book_id page')
 
-        const response = `${process.env.API_URL_PDF_BASE}/${data.filename}.pdf`
-        return handleResponse.response(res, 200, response, 'Disfruta de la lectura')
+        return handleResponse.response(res, 200, data, 'Disfruta de la lectura')
     } catch (error) {
         console.log(error)
         return handleResponse.response(res, 500, null)
@@ -388,6 +387,24 @@ async function getAuthors(req, res) {
     }
 }
 
+async function updatePage(req, res) {
+    try {
+        const page = parseInt(req.body.page)
+            record = mongoose.Types.ObjectId(req.body.record)
+        
+        await Record.updateOne(
+            {_id: record},
+            {page}
+        )
+        console.log(req.body)
+
+        return handleResponse.response(res, 200, null, null)
+    } catch (error) {
+        console.log(error)
+        return handleResponse.response(res, 500, null)
+    }
+}
+
 module.exports = {
     getBooks,
     getBook,
@@ -399,5 +416,6 @@ module.exports = {
     getResultOfSearch,
     deleteBook,
     updateBook,
-    getAuthors
+    getAuthors,
+    updatePage
 }

@@ -1,0 +1,109 @@
+<app-profile-header [username]="_user.user?.username"></app-profile-header>
+<section class="mt-2">
+  <div class="container mx-auto">
+    <div class="flex">
+      <app-profile-sidenav class="hidden md:block md:w-1/4 px-4"></app-profile-sidenav>
+      <div class="profile-data w-full md:w-3/4 py-2 px-4 flex flex-wrap">
+        <h2 class="w-full text-2xl md:text-3xl font-semibold text-gray-700">Información personal</h2>
+        <div class="w-full md:w-1/2 pr-4 user">
+          <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="profile-firstname">
+            Nombre(s)
+          </label>
+          <input
+            class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            disabled type="text" placeholder="Escribe tu nombre(s)" value="{{ _user.user?.firstname }}" id="profile-firstname">
+        </div>
+        <div class="w-full md:w-1/2 user">
+          <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="profile-lastname">
+            Apellido(s)
+          </label>
+          <input
+            class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            disabled type="text" placeholder="Escribe tu apellido(s)" value="{{ _user.user?.lastname }}" id="profile-lastname">
+        </div>
+        <div class="w-full md:w-1/2 pr-4 user">
+          <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="profile-email">
+            Correo
+          </label>
+          <input
+            class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            disabled type="text" placeholder="Escribe tu nombre(s)" value="{{ _user.user?.email }}" id="profile-email">
+        </div>
+        <div class="w-full md:w-1/2 user">
+          <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="profile-password">
+            Contraseña
+          </label>
+          <input
+            class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            disabled type="text" placeholder="Escribe tu apellido(s)" value="********" id="profile-password">
+        </div>
+        <div class="w-full flex justify-end" *ngIf="btnSaveDataUser">
+            <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none">Guardar</button>
+        </div>
+
+        <!-- ========================= INFORMACIÓN DE UBICACIÓN ========================= -->
+        <h2 class="w-full text-2xl md:text-3xl font-semibold text-gray-700">Información de ubicación</h2>
+        <div class="w-full md:w-1/2 location" (dblclick)="activateField($event.target)">
+          <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="profile-country">
+            País
+          </label>
+          <select
+            class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+            id="profile-country" disabled (change)="updateCountry($event.target.value)">
+            <option value="{{ _user.user?.location?.country_id?._id }}" selected>{{ _user.user?.location?.country_id?.name }}</option>
+            <option *ngFor="let country of countries" value="{{ country._id }}">{{ country.name }}</option>
+          </select>
+        </div>
+        <div class="w-full md:w-1/2 location" (dblclick)="activateField($event.target)">
+          <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="profile-state">
+            Estado
+          </label>
+          <select
+            class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+            id="profile-state" disabled (change)="updateState($event.target.value)">
+            <option value="{{ _user.user?.location?.state_id?._id }}" selected>{{ _user.user?.location?.state_id?.name }}</option>
+            <option *ngFor="let state of states" value="{{ state._id }}">{{ state.name }}</option>
+          </select>
+        </div>
+        <div class="w-full md:w-1/2 location" (dblclick)="activateField($event.target)">
+          <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="profile-city">
+            Ciudad
+          </label>
+          <select
+            class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none"
+            id="profile-city" disabled (change)="updateCity($event.target.value)">
+            <option value="{{ _user.user?.location?.city_id?._id }}" selected>{{ _user.user?.location?.city_id?.name }}</option>
+            <option *ngFor="let city of cities" value="{{ city._id }}">{{ city.name }}</option>
+          </select>
+        </div>
+        <div class="w-full md:w-1/2 pr-4 location" (dblclick)="activateField($event.target)">
+          <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="profile-neighborhood">
+            Vecindario
+          </label>
+          <input
+            class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            disabled type="text" value="{{ _user.user?.location?.neighborhood }}" id="profile-neighborhood">
+        </div>
+        <div class="w-full md:w-1/2 location" (dblclick)="activateField($event.target)">
+          <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="profile-street">
+            Calle
+          </label>
+          <input
+            class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            disabled type="text" value="{{ _user.user?.location?.street }}" id="profile-street">
+        </div>
+        <div class="w-full md:w-1/2 pr-4 location" (dblclick)="activateField($event.target)">
+          <label class="tracking-wide text-gray-700 text-xs font-semibold mb-2" for="profile-house-number">
+            Número de casa
+          </label>
+          <input
+            class="appearance-none block w-full bg-gray-100 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            disabled type="text" value="{{ _user.user?.location?.house_number }}" id="profile-house-number">
+        </div>
+        <div class="w-full flex justify-end" *ngIf="btnSaveDataLocation">
+          <button class="w-full bg-red-400 text-gray-100 font-semibold py-2 px-4 rounded focus:outline-none" (click)="saveDataLocation()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

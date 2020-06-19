@@ -5,6 +5,7 @@ const RecordSchema = new mongoose.Schema({
     borrower_id: {type: mongoose.Types.ObjectId, required: true, ref: 'User'},
     book_id: {type: mongoose.Types.ObjectId, required: true, ref: 'Book'},
     format_id: {type: mongoose.Types.ObjectId, required: true, ref: 'Format'},
+    page: {type: Number, required: true, default: 1},
     start_date: {type: Date, required: true},
     start_time: {type: String, required: true},
     end_date: {type: Date, required: true},

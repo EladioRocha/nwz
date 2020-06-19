@@ -27,7 +27,7 @@
     "mongoose": "^5.9.15",
     "mongoose-paginate-v2": "^1.3.9",
     "morgan": "^1.10.0",
-    "pdf2png-mp": "^0.5.4",
+    "pdf2png-mp2": "https://github.com/jcreager/pdf2png-mp/tarball/f898cc586d05b65e1f78055a519ea339b4db5ff0",
     "png-to-jpeg": "^1.0.1",
     "socket.io": "^2.3.0",
     "socketio-jwt": "^4.6.2",

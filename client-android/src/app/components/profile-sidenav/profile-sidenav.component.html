@@ -1,0 +1,32 @@
+<article class="hidden md:block">
+  <div class="flex flex-wrap">
+    <h2 class="w-full text-3xl font-semibold text-gray-700">Menú</h2>
+    <ul class="flex flex-wrap list-none shadow-md bg-red-400 mt-1">
+      <div class="w-full">
+        <li class="w-full text-gray-100 font-semibold text-sm py-2 px-4 focus:outline-none" routerLinkActive="active">
+          <a routerLink="/perfil">Perfil</a>
+        </li>
+      </div>
+      <div class="w-full">
+        <li class="w-full text-gray-100 font-semibold text-sm py-2 px-4 focus:outline-none" routerLinkActive="active">
+          <a routerLink="/perfil/historial">Historial</a>
+        </li>
+      </div>
+      <div class="w-full">
+        <li class="w-full text-gray-100 font-semibold text-sm py-2 px-4 focus:outline-none" routerLinkActive="active">
+          <a routerLink="/perfil/libros">Mis libros</a>
+        </li>
+      </div>
+      <div class="w-full">
+        <li class="w-full text-gray-100 font-semibold text-sm py-2 px-4 focus:outline-none" routerLinkActive="active">
+          <a routerLink="/perfil/reportes">Reportes</a>
+        </li>
+      </div>
+      <div class="w-full">
+        <li class="w-full text-gray-100 font-semibold text-sm py-2 px-4 focus:outline-none cursor-pointer" routerLinkActive="active">
+          <a (click)="closeSession()">Cerrar sesión</a>
+        </li>
+      </div>
+    </ul>
+  </div>
+</article>
