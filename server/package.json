@@ -29,7 +29,7 @@
     "morgan": "^1.10.0",
     "pdf2png-mp2": "https://github.com/jcreager/pdf2png-mp/tarball/f898cc586d05b65e1f78055a519ea339b4db5ff0",
     "png-to-jpeg": "^1.0.1",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "socketio-jwt": "^4.6.2",
     "validator": "^13.0.0"
   },
