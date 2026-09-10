@@ -1,99 +1,54 @@
-# nwz
+# NWZ — Distributed Book Application
 
-Proyecto de sistemas distribuidos con servidor Node.js y clientes Angular para web y Android/Cordova. Cada componente tiene sus propias dependencias.
+A distributed-systems coursework project with a **Node.js API, an Angular web client, and an Angular/Cordova Android client**. The API includes books, authentication, users, genres, formats, languages, and locations.
 
-## Estructura
+## Components
 
-- [client-android](client-android)
-- [client-web](client-web)
-- [server](server)
-
-## Preparación y uso
-
-Instala las dependencias por componente. `client-web/nwz/` declara Node `~12.16.1` y npm `~6.13.4`: es un entorno heredado que necesita migración antes de reutilizarse en un despliegue actual. El servidor usa MongoDB y configuración de almacenamiento y autenticación. Revisa las URL de los clientes antes de conectarlos.
-
-### client-android
-
-Requiere Node.js. Este paquete no fija una versión del runtime; valida compatibilidad con las dependencias antes de actualizarlo.
-
-```sh
-cd client-android
-npm ci
-npm run start
-```
-
-Comandos declarados en [client-android/package.json](client-android/package.json):
-
-| Comando | Acción |
+| Directory | Purpose |
 | --- | --- |
-| `npm run ng` | `ng` |
-| `npm run start` | `ng serve` |
-| `npm run build` | `ng build` |
-| `npm run test` | `ng test` |
-| `npm run lint` | `ng lint` |
-| `npm run e2e` | `ng e2e` |
+| [server](server) | Express API, MongoDB data, Socket.IO, and storage helpers. |
+| [client-web/nwz](client-web/nwz) | Angular web application and an Express static server. |
+| [client-android](client-android) | Angular client with Cordova Android configuration. |
 
-### client-web/nwz
+Install dependencies separately in each component. The root Cordova package is not the entry point for the full application.
 
-Versiones declaradas: `node ~12.16.1`, `npm ~6.13.4`.
+## Runtime and configuration
 
-```sh
-cd client-web/nwz
-npm ci
-npm run start
-```
+The web package declares Node `~12.16.1` and npm `~6.13.4`; the clients use Angular 9-era tooling. These are historical requirements, not a recommendation for a new deployment. Native PDF/image packages and Android tooling may need compatibility work.
 
-Comandos declarados en [client-web/nwz/package.json](client-web/nwz/package.json):
+Create local server configuration in `server/.env` before startup:
 
-| Comando | Acción |
+| Variables | Purpose |
 | --- | --- |
-| `npm run ng` | `ng` |
-| `npm run start` | `node server.js` |
-| `npm run build` | `ng build` |
-| `npm run test` | `ng test` |
-| `npm run lint` | `ng lint` |
-| `npm run e2e` | `ng e2e` |
-| `npm run postinstall` | `ng build --aot --prod` |
+| `MONGO_URI_PROD` | MongoDB URI consumed by the entry point, including for a local database. |
+| `PORT_DEV`, `PORT` | API port; `PORT` takes precedence. |
+| `JWT_SECRET_KEY`, `BCRYPT_SALT_ROUNDS` | Authentication secret and password work factor. |
+| `ACCESS_KEY_ID`, `SECRET_ACCESS_KEY`, `BUCKET_NAME` | Storage credentials and bucket used by upload helpers. |
+| `API_URL_USER_PICTURES_BASE` | User-picture base URL. |
+| `BOOKS_PER_PAGE` | Book pagination setting. |
+| `DEFAULT_STATUS_REPORT`, `STATUS_OK` | Application status values used by server helpers. |
 
-### server
+Review the consuming code under [server/src](server/src) for the expected status values and storage setup. Check API and socket URLs in both clients before connecting to a local server; configuration is not centralized entirely in Angular environment files.
 
-Requiere Node.js. Este paquete no fija una versión del runtime; valida compatibilidad con las dependencias antes de actualizarlo.
+## Start the API
 
 ```sh
 cd server
 npm ci
-npm run dev
+npm start
 ```
 
-Comandos declarados en [server/package.json](server/package.json):
+Routes are mounted under `/api/v1/`, including `/api/v1/books` and `/api/v1/authentication`. `npm run dev` refers to `nodemon`, which is not declared in this package.
 
-| Comando | Acción |
-| --- | --- |
-| `npm run dev` | `nodemon src/index.js` |
-| `npm run start` | `node src/index.js` |
+## Start a client
 
-## Configuración detectada en el código
+From `client-web/nwz`, run `npm ci`, then `npm run ng -- serve` for the Angular development server on port 4200. Installation triggers a production build through `postinstall`. `npm start` instead serves the compiled `dist/nwz` application on `PORT` or port 8080.
 
-Estas son referencias explícitas a variables de entorno, no una garantía de que toda la configuración esté externalizada. Los nombres y archivos permiten localizar dónde se usan; los valores deben corresponder a tu entorno.
+From `client-android`, run `npm ci` and `npm start` for a browser preview. This does not build or install an Android app. See the component guides for more detail:
 
-| Variable | Referencia |
-| --- | --- |
-| `ACCESS_KEY_ID` | [server/src/helpers/uploadFileToAWS.js](server/src/helpers/uploadFileToAWS.js) |
-| `API_URL_USER_PICTURES_BASE` | [server/src/services/authentication/controllers.js](server/src/services/authentication/controllers.js) |
-| `BCRYPT_SALT_ROUNDS` | [server/src/services/authentication/middlewares.js](server/src/services/authentication/middlewares.js) |
-| `BOOKS_PER_PAGE` | [server/src/services/books/controllers.js](server/src/services/books/controllers.js) |
-| `BUCKET_NAME` | [server/src/services/books/controllers.js](server/src/services/books/controllers.js) |
-| `DEFAULT_STATUS_REPORT` | [server/src/services/users/controllers.js](server/src/services/users/controllers.js) |
-| `HOME` | [client-android/platforms/android/cordova/lib/build.js](client-android/platforms/android/cordova/lib/build.js) |
-| `JWT_SECRET_KEY` | [server/src/services/authentication/middlewares.js](server/src/services/authentication/middlewares.js) |
-| `MONGO_URI_PROD` | [server/src/index.js](server/src/index.js) |
-| `PORT` | [client-android/server.js](client-android/server.js) |
-| `PORT_DEV` | [server/src/index.js](server/src/index.js) |
-| `SECRET_ACCESS_KEY` | [server/src/helpers/uploadFileToAWS.js](server/src/helpers/uploadFileToAWS.js) |
-| `STATUS_OK` | [server/src/helpers/handleResponse.js](server/src/helpers/handleResponse.js) |
+- [Web client guide](client-web/nwz/README.md)
+- [Android client guide](client-android/README.md)
 
-No guardes credenciales reales en la documentación. Si hay `.env.example`, úsalo como referencia y revisa cómo carga la configuración el punto de entrada.
+## Verification
 
-## Validación y estado
-
-Esta guía se contrastó con el árbol de archivos y los manifiestos del repositorio. No se ha validado una ejecución completa contra servicios externos, bases de datos o hardware. Las versiones y los scripts mostrados describen el código actual; no implican que sus dependencias antiguas sigan siendo compatibles.
+The clients declare build, Karma test, lint, and Protractor e2e scripts. Their presence does not establish passing coverage. The API has no test script. MongoDB, storage, live sockets, and Android packaging were not exercised during this documentation update. Preserve the notices in bundled Cordova code when modifying the project.

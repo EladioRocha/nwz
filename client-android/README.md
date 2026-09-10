@@ -1,27 +1,27 @@
-# Nwz
+# NWZ Android Client
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.6.
+Angular 9 interface with a Cordova Android wrapper for the NWZ book application.
 
-## Development server
+See the [repository guide](../README.md) for API, database, and storage configuration.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Local preview
 
-## Code scaffolding
+Run these commands from this directory:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```sh
+npm ci
+npm start
+```
 
-## Build
+Open `http://localhost:4200`. Confirm the API and socket destinations in `src` point to your development backend.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+## Build and checks
 
-## Running unit tests
+- `npm run build`: compile the Angular application.
+- `npm test`: run the Karma test runner.
+- `npm run lint`: run the configured linter.
+- `npm run e2e`: run the Protractor workflow.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+The checked-in `config.xml`, `platforms`, and `plugins` describe a legacy Cordova Android setup. A browser preview does not validate native permissions or packaging. Android builds require a compatible JDK, Android SDK, Gradle, and Cordova toolchain; no native build was verified for this update.
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+These are legacy component commands. No dependency upgrade or client integration test is included in this documentation change.
